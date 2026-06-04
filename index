@@ -1,0 +1,1950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Discovery CRM — Customer discovery, organized</title>
+<meta name="description" content="Discovery CRM — track customer-discovery contacts through a pipeline, capture interviews, auto-tag ICPs, and jump straight into a Reactioner interview." />
+<meta name="theme-color" content="#4f46e5" />
+
+<!-- Favicon: an indigo brand card with a clipboard glyph, inlined so the file stays self-contained -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Cdefs%3E%3ClinearGradient%20id='g'%20x1='0'%20y1='0'%20x2='1'%20y2='1'%3E%3Cstop%20offset='0'%20stop-color='#6366f1'/%3E%3Cstop%20offset='1'%20stop-color='#4f46e5'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20x='4'%20y='4'%20width='56'%20height='56'%20rx='16'%20fill='url%28#g%29'/%3E%3Crect%20x='19'%20y='14'%20width='26'%20height='36'%20rx='4'%20fill='#ffffff'/%3E%3Crect%20x='26'%20y='10'%20width='12'%20height='8'%20rx='2.5'%20fill='#eef2ff'%20stroke='#4f46e5'%20stroke-width='2'/%3E%3Ccircle%20cx='27'%20cy='27'%20r='2.3'%20fill='#4f46e5'/%3E%3Ccircle%20cx='27'%20cy='36'%20r='2.3'%20fill='#4f46e5'/%3E%3Crect%20x='31.5'%20y='25.4'%20width='9.5'%20height='3.2'%20rx='1.6'%20fill='#c7d2fe'/%3E%3Crect%20x='31.5'%20y='34.4'%20width='9.5'%20height='3.2'%20rx='1.6'%20fill='#c7d2fe'/%3E%3C/svg%3E" />
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='14'%20fill='%234f46e5'/%3E%3Crect%20x='19'%20y='14'%20width='26'%20height='36'%20rx='4'%20fill='%23ffffff'/%3E%3Crect%20x='26'%20y='10'%20width='12'%20height='8'%20rx='2.5'%20fill='%23eef2ff'%20stroke='%234f46e5'%20stroke-width='2'/%3E%3C/svg%3E" />
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --bg: #f5f6fb;
+    --panel: #ffffff;
+    --text: #1b1d2a;
+    --muted: #71758a;
+    --border: #e6e8f0;
+    --soft: #f7f8fc;
+    --accent: #4f46e5;
+    --accent-2: #6366f1;
+    --accent-soft: #eef2ff;
+    --accent-border: #c7d2fe;
+    --ink: #312e81;
+    --shadow: 0 4px 18px rgba(40,40,90,0.07);
+    --shadow-lg: 0 18px 48px rgba(30,30,70,0.22);
+    --radius: 14px;
+    --ig: #c13584;
+    --stage-not-contacted: #94a3b8;
+    --stage-contacted: #38bdf8;
+    --stage-scheduled: #6366f1;
+    --stage-talked-to: #22c55e;
+    --stage-unsuitable: #a8a29e;
+    --stage-cancelled: #ef4444;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.45; font-size: 14px; -webkit-font-smoothing: antialiased; }
+  a { color: var(--accent); }
+  .container { max-width: 1440px; margin: 0 auto; padding: 16px 18px 70px; }
+
+  /* ===== TOP BAR ===== */
+  .topbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; }
+  .brand { display: flex; align-items: center; gap: 11px; }
+  .brand .logo { width: 38px; height: 38px; border-radius: 11px; background: linear-gradient(135deg, var(--accent-2), var(--accent)); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(79,70,229,0.35); flex-shrink: 0; }
+  .brand .logo svg { width: 22px; height: 22px; }
+  .brand h1 { margin: 0; font-size: 19px; letter-spacing: -0.3px; }
+  .brand .sub { font-size: 11.5px; color: var(--muted); margin-top: 1px; }
+  .topbar-right { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+  .sync-pill { font-size: 12px; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; background: var(--panel); border: 1px solid var(--border); padding: 6px 11px; border-radius: 20px; }
+  .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: #cbd2e0; flex-shrink: 0; }
+  .sync-pill.ok .sync-dot { background: #22c55e; }
+  .sync-pill.saving .sync-dot { background: #f59e0b; animation: pulse 1s infinite; }
+  .sync-pill.err .sync-dot { background: #ef4444; }
+  @keyframes pulse { 50% { opacity: 0.3; } }
+
+  .account { display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--muted); }
+  .account .who { font-weight: 600; color: var(--text); max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* ===== BUTTONS ===== */
+  .btn { padding: 8px 14px; border-radius: 10px; border: 1px solid var(--border); background: white; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--text); transition: all 0.12s ease; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; line-height: 1.2; }
+  .btn:hover { background: var(--soft); border-color: #d3d7e6; }
+  .btn.primary { background: linear-gradient(135deg, var(--accent-2), var(--accent)); color: white; border-color: transparent; box-shadow: 0 3px 10px rgba(79,70,229,0.28); }
+  .btn.primary:hover { filter: brightness(1.06); background: linear-gradient(135deg, var(--accent-2), var(--accent)); }
+  .btn.ai { background: linear-gradient(135deg, #8b5cf6, #6d28d9); color: white; border-color: transparent; }
+  .btn.ai:hover { filter: brightness(1.06); }
+  .btn.danger { color: #dc2626; border-color: #f3c9c9; background: white; }
+  .btn.danger:hover { background: #fef2f2; }
+  .btn.ghost { background: transparent; border-color: transparent; color: var(--muted); }
+  .btn.ghost:hover { background: var(--soft); color: var(--text); }
+  .btn.tiny { padding: 5px 9px; font-size: 12px; border-radius: 8px; }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
+
+  /* ===== QUICK ADD ===== */
+  .quick-add { display: flex; gap: 8px; align-items: center; background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 12px; box-shadow: var(--shadow); margin-bottom: 12px; flex-wrap: wrap; }
+  .quick-add .qa-icon { font-size: 17px; }
+  .quick-add input.qa-input { flex: 1; min-width: 220px; border: none; outline: none; font-size: 14px; padding: 6px 4px; background: transparent; }
+  .quick-add .qa-hint { font-size: 11px; color: var(--muted); width: 100%; margin: -2px 0 0 30px; }
+  .quick-add .qa-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  .search-box { padding: 8px 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; width: 230px; background: white; }
+
+  select, input[type="text"], input[type="email"], input[type="tel"], input[type="date"], input[type="url"], input[type="password"], textarea {
+    padding: 9px 11px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; font-family: inherit; background: white; color: var(--text); width: 100%; }
+  select:focus, input:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  textarea { resize: vertical; }
+  label.field-label { display: block; font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
+
+  /* ===== TABS ===== */
+  .tabs { display: flex; gap: 4px; background: var(--panel); padding: 6px; border-radius: 14px; box-shadow: var(--shadow); margin-bottom: 12px; overflow-x: auto; }
+  .tab { padding: 9px 17px; border-radius: 10px; border: none; background: transparent; color: var(--muted); font-weight: 600; cursor: pointer; font-size: 14px; white-space: nowrap; }
+  .tab.active { background: linear-gradient(135deg, var(--accent-2), var(--accent)); color: white; box-shadow: 0 3px 10px rgba(79,70,229,0.28); }
+  .tab:hover:not(.active) { background: var(--soft); color: var(--text); }
+
+  /* ===== FILTER BAR ===== */
+  .filter-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; background: var(--panel); padding: 10px 12px; border-radius: 14px; box-shadow: var(--shadow); margin-bottom: 14px; }
+  .filter-bar .filter-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .filter-bar select { width: auto; font-size: 12.5px; padding: 7px 9px; }
+  .filter-chip { padding: 6px 11px; border-radius: 16px; border: 1px solid var(--border); background: white; cursor: pointer; font-size: 12.5px; font-weight: 600; color: var(--muted); }
+  .filter-chip:hover { background: var(--soft); }
+  .filter-chip.active { background: var(--accent-soft); border-color: var(--accent-border); color: var(--ink); }
+  .filter-count { margin-left: auto; font-size: 12.5px; color: var(--muted); }
+
+  /* ===== LINKS ON CARDS ===== */
+  .contact-link { text-decoration: none; font-weight: 600; font-size: 12px; display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px; border-radius: 9px; border: 1px solid transparent; }
+  .contact-link.ig { color: var(--ig); background: #fdf0f8; border-color: #f6d6ec; }
+  .contact-link.email { color: #1d6fb8; background: #eaf4ff; border-color: #cfe5fb; }
+  .contact-link.phone { color: #15803d; background: #ecfdf3; border-color: #c9f0d6; }
+  .contact-link:hover { filter: brightness(0.97); text-decoration: none; }
+
+  /* ===== PIPELINE ===== */
+  .kanban { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; min-height: 60vh; align-items: start; }
+  .kanban-col { background: var(--panel); border-radius: 14px; padding: 12px; box-shadow: var(--shadow); display: flex; flex-direction: column; min-height: 220px; }
+  .kanban-col h3 { margin: 0 0 10px; font-size: 12px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
+  .kanban-col h3 .stage-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .kanban-col h3 .count { margin-left: auto; background: var(--soft); border-radius: 10px; padding: 1px 9px; font-size: 12px; color: var(--text); }
+  .kanban-cards { display: flex; flex-direction: column; gap: 9px; overflow-y: auto; min-height: 60px; }
+  .contact-card { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 11px 13px; cursor: grab; transition: all 0.12s ease; user-select: none; position: relative; }
+  .contact-card:hover { border-color: var(--accent-border); box-shadow: 0 4px 14px rgba(79,70,229,0.12); transform: translateY(-1px); }
+  .contact-card.dragging { opacity: 0.4; transform: rotate(-1.5deg) scale(0.98); }
+  .kanban-col.drop-target { background: var(--accent-soft); outline: 2px dashed var(--accent); outline-offset: -4px; }
+  .kanban-col.drop-target h3 { color: var(--ink); }
+  .contact-card .name { font-weight: 700; font-size: 14px; margin-bottom: 2px; }
+  .contact-card .company { font-size: 12px; color: var(--muted); margin-bottom: 7px; }
+  .contact-card .links { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 6px; }
+  .contact-card .meta { display: flex; flex-wrap: wrap; gap: 4px; }
+  .contact-card .tag { font-size: 10px; background: var(--accent-soft); border: 1px solid var(--accent-border); padding: 2px 7px; border-radius: 10px; color: var(--ink); font-weight: 600; }
+  .contact-card .tag.interviews { background: #fff7e6; border-color: #f5d98a; color: #92660a; }
+  .card-del { position: absolute; top: 6px; right: 6px; opacity: 0; border: none; background: #fef2f2; color: #dc2626; border-radius: 7px; width: 22px; height: 22px; cursor: pointer; font-size: 13px; line-height: 1; transition: opacity 0.12s; }
+  .contact-card:hover .card-del { opacity: 1; }
+  .card-del:hover { background: #fee2e2; }
+
+  /* ===== LIST ===== */
+  .list-table-wrap { background: white; border-radius: 14px; box-shadow: var(--shadow); overflow: auto; }
+  table.list { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.list th, table.list td { padding: 11px 13px; text-align: left; border-bottom: 1px solid var(--border); }
+  table.list th { background: var(--soft); font-weight: 800; color: var(--muted); text-transform: uppercase; font-size: 10.5px; letter-spacing: 0.5px; position: sticky; top: 0; z-index: 1; }
+  table.list tbody tr { cursor: pointer; }
+  table.list tbody tr:hover { background: var(--accent-soft); }
+  table.list .stage-pill { display: inline-block; padding: 2px 9px; border-radius: 10px; font-size: 11px; font-weight: 700; color: white; }
+
+  /* ===== SETTINGS ===== */
+  .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .settings-grid .panel { background: var(--panel); border-radius: 14px; padding: 18px; box-shadow: var(--shadow); }
+  .settings-grid h3 { margin-top: 0; font-size: 15px; }
+  .panel.span { grid-column: 1 / -1; }
+  .tag-list { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  .tag-list .item { background: var(--soft); border: 1px solid var(--border); padding: 4px 10px; border-radius: 14px; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; }
+  .tag-list .item button { background: none; border: none; cursor: pointer; color: var(--muted); padding: 0; font-size: 14px; line-height: 1; }
+  .tag-list .item button:hover { color: #dc2626; }
+
+  /* ===== MODAL ===== */
+  .modal-back { position: fixed; inset: 0; background: rgba(20,22,40,0.5); backdrop-filter: blur(2px); display: none; align-items: center; justify-content: center; z-index: 50; padding: 20px; }
+  .modal-back.show { display: flex; }
+  .modal { background: white; padding: 0; border-radius: 16px; max-width: 900px; width: 100%; max-height: 92vh; overflow: hidden; display: flex; flex-direction: column; box-shadow: var(--shadow-lg); }
+  .modal-header { padding: 17px 22px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+  .modal-header h2 { margin: 0; font-size: 18px; }
+  .modal-body { padding: 18px 22px; overflow-y: auto; flex: 1; }
+  .modal-footer { padding: 14px 22px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 6px; flex-wrap: wrap; }
+
+  .contact-actions { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px dashed var(--border); }
+
+  .contact-detail-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 14px; }
+  .contact-detail-tabs button { padding: 9px 14px; border: none; background: transparent; cursor: pointer; font-weight: 600; color: var(--muted); border-bottom: 2px solid transparent; font-size: 13px; }
+  .contact-detail-tabs button.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .form-row.single { grid-template-columns: 1fr; }
+  .form-field { display: flex; flex-direction: column; gap: 4px; }
+  .input-with-action { display: flex; gap: 6px; align-items: center; }
+
+  .multiselect { display: flex; flex-wrap: wrap; gap: 4px; padding: 6px; border: 1px solid var(--border); border-radius: 10px; min-height: 42px; }
+  .multiselect .item { background: var(--accent-soft); border: 1px solid var(--accent-border); color: var(--ink); padding: 2px 8px; border-radius: 12px; font-size: 12px; display: inline-flex; align-items: center; gap: 4px; }
+  .multiselect .item button { background: none; border: none; cursor: pointer; color: var(--ink); padding: 0; line-height: 1; }
+  .multiselect select { width: auto; border: none; outline: none; padding: 4px 8px; flex: 1; min-width: 130px; box-shadow: none; }
+
+  .interview-card { background: var(--soft); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-bottom: 12px; }
+  .interview-card.reactioner { border-color: #f5d98a; background: #fffdf6; }
+  .interview-card-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+  .interview-card-head h4 { margin: 0; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+  .iv-badge { font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; padding: 2px 8px; border-radius: 8px; background: #fff7e6; color: #92660a; border: 1px solid #f5d98a; }
+  .interview-fields { display: grid; grid-template-columns: 1fr; gap: 10px; }
+  .transcript-area { min-height: 120px; font-size: 13px; line-height: 1.5; }
+  .transcript-controls { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; font-size: 12px; color: var(--muted); }
+  .transcript-controls .char-count { margin-left: auto; }
+  .rxn-row { display: flex; gap: 6px; align-items: end; }
+  .rxn-row .field-grow { flex: 1; }
+
+  .reaction-summary { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; background: white; border: 1px solid #ead9ad; border-radius: 10px; padding: 10px 13px; font-size: 13px; }
+  .reaction-summary .big { font-size: 16px; font-weight: 800; }
+  .reaction-summary .verdict { margin-left: auto; font-weight: 700; padding: 3px 10px; border-radius: 10px; }
+  .verdict.win { background: #ecfdf3; color: #15803d; }
+  .verdict.mixed { background: #fff7e6; color: #92660a; }
+  .verdict.lose { background: #fef2f2; color: #dc2626; }
+
+  .empty-state { padding: 48px; text-align: center; color: var(--muted); font-size: 14px; }
+  .empty-state h3 { color: var(--text); margin-bottom: 8px; }
+  .empty-state .big-icon { font-size: 40px; margin-bottom: 8px; }
+
+  .toast { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%) translateY(20px); background: #1b1d2a; color: white; padding: 11px 20px; border-radius: 10px; font-size: 14px; opacity: 0; transition: all 0.25s ease; pointer-events: none; z-index: 200; box-shadow: var(--shadow-lg); }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: currentColor; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .extract-btn { background: linear-gradient(135deg, #8b5cf6, #6d28d9); color: white; border: none; padding: 8px 14px; border-radius: 10px; font-weight: 600; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+  .extract-btn:hover { filter: brightness(1.06); }
+  .extract-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .extract-result { background: #f5f3ff; border: 1px solid #c4b5fd; border-radius: 12px; padding: 14px 16px; margin-bottom: 14px; }
+  .extract-result h4 { margin: 0 0 6px; font-size: 13px; color: #5b21b6; text-transform: uppercase; letter-spacing: 0.4px; display: flex; align-items: center; gap: 6px; }
+  .extract-result .section-note { font-size: 12px; color: var(--muted); margin: 0 0 8px; font-style: italic; }
+  .extract-result ul { margin: 0 0 14px; padding-left: 22px; font-size: 13px; line-height: 1.55; }
+  .extract-result .validated-pain { background: white; border: 1px solid #d6d0f5; border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; }
+  .extract-result .validated-pain .pain-head { display: flex; align-items: flex-start; gap: 8px; flex-wrap: wrap; }
+  .extract-result .validated-pain .pain-text { font-weight: 600; flex: 1; min-width: 200px; }
+  .extract-result .badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.4px; flex-shrink: 0; }
+  .badge-strong { background: #d4edda; color: #1e5631; }
+  .badge-medium { background: #fff3cd; color: #856404; }
+  .badge-weak { background: #f1f3f5; color: #555; }
+  .extract-result .evidence { font-size: 12px; color: var(--muted); margin-top: 6px; padding-left: 8px; border-left: 2px solid #c4b5fd; }
+  .extract-result .signals { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+  .extract-result .signal-tag { font-size: 10px; padding: 1px 7px; border-radius: 8px; background: #ede7ff; color: #5b21b6; font-weight: 600; }
+  .extract-result.red-flags-panel { background: #fff5f5; border-color: #f5b7b1; }
+  .extract-result.red-flags-panel h4 { color: #c62828; }
+  .extract-result .red-flag { background: white; border: 1px solid #f5d3d3; border-radius: 8px; padding: 10px 12px; margin-bottom: 6px; }
+  .extract-result .red-flag .claim { font-style: italic; color: #555; }
+  .extract-result .red-flag .issue { font-size: 12px; color: #c62828; margin-top: 4px; padding-left: 8px; border-left: 2px solid #f5b7b1; }
+  .extract-result.quotes-panel { background: #f0f7ff; border-color: #b5cdf7; }
+  .extract-result.quotes-panel h4 { color: #2c5282; }
+  .extract-result .quote-item { background: white; border: 1px solid #d6e4ff; border-radius: 8px; padding: 8px 12px; margin-bottom: 6px; font-style: italic; line-height: 1.5; }
+
+  /* ===== DROP OVERLAY ===== */
+  .drop-overlay { position: fixed; inset: 0; z-index: 300; background: rgba(79,70,229,0.14); backdrop-filter: blur(3px); display: none; align-items: center; justify-content: center; }
+  .drop-overlay.show { display: flex; }
+  .drop-card { background: white; border: 3px dashed var(--accent); border-radius: 18px; padding: 40px 56px; text-align: center; box-shadow: var(--shadow-lg); }
+  .drop-card .big-icon { font-size: 44px; }
+  .drop-card h3 { margin: 8px 0 4px; }
+  .drop-card p { margin: 0; color: var(--muted); font-size: 13px; }
+
+  /* ===== AUTH GATE ===== */
+  #auth-gate { position: fixed; inset: 0; background: linear-gradient(160deg, #eef2ff, #f5f6fb 60%); display: none; align-items: center; justify-content: center; z-index: 400; padding: 20px; }
+  #auth-gate .auth-card { background: white; border-radius: 18px; box-shadow: var(--shadow-lg); padding: 30px 28px; max-width: 380px; width: 100%; }
+  #auth-gate .auth-logo { width: 52px; height: 52px; border-radius: 14px; background: linear-gradient(135deg, var(--accent-2), var(--accent)); display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; box-shadow: 0 6px 16px rgba(79,70,229,0.35); }
+  #auth-gate h2 { margin: 0 0 4px; text-align: center; font-size: 20px; }
+  #auth-gate .auth-sub { text-align: center; color: var(--muted); font-size: 13px; margin: 0 0 20px; }
+  #auth-gate form { display: flex; flex-direction: column; gap: 10px; }
+  #auth-gate .auth-row { display: flex; gap: 8px; }
+  #auth-gate .auth-row .btn { flex: 1; justify-content: center; padding: 11px; }
+  #auth-gate .link-btn { background: none; border: none; color: var(--accent); cursor: pointer; font-size: 12.5px; font-weight: 600; }
+  #auth-gate .auth-msg { font-size: 13px; min-height: 18px; text-align: center; }
+  #auth-gate .auth-msg.err { color: #dc2626; }
+  #auth-gate .auth-msg.ok { color: #15803d; }
+  #auth-gate .auth-foot { text-align: center; margin-top: 14px; }
+
+  /* ===== PRINT / PDF (preserved) ===== */
+  #print-root { display: none; }
+  @media print {
+    body > .container, .modal-back, .toast, #auth-gate, .drop-overlay { display: none !important; }
+    #print-root { display: block !important; }
+    body { background: #ffffff; }
+    @page { margin: 13mm 12mm 14mm; }
+  }
+  #print-root { color: #1b1d22; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 11pt; line-height: 1.5; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  #print-root * { box-sizing: border-box; }
+  #print-root a { color: #1b1d22; text-decoration: none; }
+  #print-root .pdf-muted { color: #8a8f97; font-style: italic; }
+  #print-root .pdf-page { page-break-after: always; }
+  #print-root .pdf-profiles { page-break-before: always; }
+  #print-root .pdf-cover { border-bottom: 3px solid #4f46e5; padding-bottom: 12px; margin-bottom: 16px; }
+  #print-root .pdf-doc-title { font-size: 26pt; margin: 0; letter-spacing: -0.6px; color: #312e81; }
+  #print-root .pdf-doc-sub { font-size: 10.5pt; color: #6b6f76; margin: 7px 0 0; }
+  #print-root .pdf-section-title { font-size: 14pt; font-weight: 700; margin: 20px 0 9px; padding-bottom: 5px; border-bottom: 2px solid #4f46e5; }
+  #print-root .pdf-section-note { font-size: 9.5pt; color: #6b6f76; margin: -3px 0 11px; }
+  #print-root .pdf-stage-band { margin-bottom: 11px; page-break-inside: avoid; border: 1px solid #d4d8de; border-radius: 8px; overflow: hidden; }
+  #print-root .pdf-stage-head { color: #ffffff; padding: 6px 12px; font-weight: 700; font-size: 11pt; display: flex; align-items: center; gap: 8px; }
+  #print-root .pdf-stage-head .ct { margin-left: auto; font-size: 9.5pt; font-weight: 700; background: rgba(255,255,255,0.28); padding: 1px 10px; border-radius: 10px; }
+  #print-root .pdf-stage-body { padding: 8px 12px; column-count: 3; column-gap: 20px; }
+  #print-root .pdf-snap-item { font-size: 9.5pt; padding: 2.5px 0; break-inside: avoid; }
+  #print-root .pdf-snap-item .co { color: #6b6f76; }
+  #print-root .pdf-snap-item.iv { font-weight: 700; }
+  #print-root .pdf-snap-item.iv .tag { color: #1769aa; }
+  #print-root .pdf-empty-stage { font-size: 9.5pt; color: #8a8f97; font-style: italic; }
+  #print-root table.pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 4px; }
+  #print-root table.pdf-table th, #print-root table.pdf-table td { border: 1px solid #c9ced6; padding: 5px 8px; text-align: left; font-size: 9.5pt; vertical-align: top; }
+  #print-root table.pdf-table th { background: #312e81; color: #ffffff; font-size: 8pt; text-transform: uppercase; letter-spacing: 0.5px; }
+  #print-root table.pdf-table thead { display: table-header-group; }
+  #print-root table.pdf-table tr { page-break-inside: avoid; }
+  #print-root table.pdf-table tbody tr:nth-child(even) td { background: #f4f5f7; }
+  #print-root table.pdf-table tbody tr.iv-row td { background: #fff6e0; font-weight: 600; }
+  #print-root table.pdf-table .num { text-align: right; white-space: nowrap; }
+  #print-root table.pdf-roster th:first-child, #print-root table.pdf-roster td:first-child { width: 24px; }
+  #print-root .pdf-stage-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  #print-root .pdf-stage-pill { display: inline-block; padding: 1.5px 8px; border-radius: 9px; font-size: 8pt; font-weight: 700; color: #ffffff; white-space: nowrap; }
+  #print-root .pdf-profile { border: 1px solid #c9ced6; border-radius: 9px; padding: 12px 15px; margin-bottom: 11px; page-break-inside: avoid; }
+  #print-root .pdf-profile.interviewed { border: 2px solid #e8a317; background: #fffdf6; page-break-inside: auto; }
+  #print-root .pdf-profile-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; border-bottom: 1px solid #e3e6ea; padding-bottom: 7px; margin-bottom: 8px; }
+  #print-root .pdf-profile.interviewed .pdf-profile-head { border-bottom-color: #e8a317; }
+  #print-root .pdf-profile-name { font-size: 12.5pt; font-weight: 700; }
+  #print-root .pdf-profile-sub { font-size: 10pt; color: #6b6f76; margin-top: 2px; }
+  #print-root .pdf-head-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+  #print-root .pdf-iv-badge { background: #e8a317; color: #ffffff; font-size: 7.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; padding: 2px 8px; border-radius: 4px; white-space: nowrap; }
+  #print-root .pdf-field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px 26px; }
+  #print-root .pdf-kv { display: flex; gap: 8px; font-size: 10pt; padding: 2.5px 0; border-bottom: 1px dotted #e3e6ea; }
+  #print-root .pdf-kv .k { flex: 0 0 70px; font-size: 8pt; text-transform: uppercase; letter-spacing: 0.4px; color: #6b6f76; padding-top: 2px; font-weight: 700; }
+  #print-root .pdf-kv .v { flex: 1; }
+  #print-root .pdf-notes { margin-top: 8px; font-size: 10pt; }
+  #print-root .pdf-block-label { font-size: 8pt; text-transform: uppercase; letter-spacing: 0.5px; color: #6b6f76; font-weight: 700; margin-bottom: 3px; }
+  #print-root .pdf-longtext { white-space: pre-wrap; }
+  #print-root .pdf-iv-section { margin-top: 10px; border-top: 1.5px solid #e8a317; padding-top: 8px; }
+  #print-root .pdf-iv-section > .pdf-block-label { color: #b07d0a; font-size: 9pt; }
+  #print-root .pdf-interview { background: #ffffff; border: 1px solid #ead9ad; border-radius: 7px; padding: 9px 12px; margin-top: 7px; }
+  #print-root .pdf-iv-date { font-weight: 700; font-size: 10.5pt; margin-bottom: 6px; }
+  #print-root .pdf-iv-date .meta { font-weight: 400; color: #6b6f76; font-size: 9pt; }
+  #print-root .pdf-iv-mini-label { font-size: 8pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; color: #6b6f76; margin: 7px 0 3px; }
+  #print-root .pdf-pain { font-size: 9.5pt; margin-bottom: 4px; display: flex; gap: 7px; align-items: baseline; break-inside: avoid; }
+  #print-root .pdf-pain .txt { flex: 1; }
+  #print-root .pdf-score { flex-shrink: 0; font-size: 6.8pt; font-weight: 700; padding: 1.5px 6px; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.4px; }
+  #print-root .pdf-score.strong { background: #d4edda; color: #1e5631; }
+  #print-root .pdf-score.medium { background: #fff3cd; color: #856404; }
+  #print-root .pdf-score.weak { background: #f1f3f5; color: #555555; }
+  #print-root .pdf-quote { font-size: 9.5pt; font-style: italic; color: #333333; border-left: 2px solid #e8a317; padding-left: 9px; margin: 3px 0; break-inside: avoid; }
+  #print-root .pdf-iv-sub { font-size: 8.5pt; color: #6b6f76; margin-top: 5px; }
+
+  @media (max-width: 1100px) { .kanban { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 720px) {
+    .kanban { grid-template-columns: 1fr; }
+    .settings-grid { grid-template-columns: 1fr; }
+    .form-row { grid-template-columns: 1fr; }
+    .search-box { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== SIGN-IN GATE (built/shown by JS when cloud sync is configured) ===== -->
+<div id="auth-gate"></div>
+
+<div class="container" id="app-container">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">
+        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><rect x="19" y="14" width="26" height="36" rx="4" fill="#ffffff"/><rect x="26" y="10" width="12" height="8" rx="2.5" fill="#eef2ff" stroke="#4f46e5" stroke-width="2"/><circle cx="27" cy="27" r="2.3" fill="#4f46e5"/><circle cx="27" cy="36" r="2.3" fill="#4f46e5"/><rect x="31.5" y="25.4" width="9.5" height="3.2" rx="1.6" fill="#c7d2fe"/><rect x="31.5" y="34.4" width="9.5" height="3.2" rx="1.6" fill="#c7d2fe"/></svg>
+      </div>
+      <div>
+        <h1>Discovery CRM</h1>
+        <div class="sub">Customer discovery, organized</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <span class="sync-pill" id="sync-pill" title="Where your data lives"><span class="sync-dot"></span><span id="sync-text">Local</span></span>
+      <input type="text" id="search-input" class="search-box" placeholder="🔍 Search name, company, role…" />
+      <span id="account-widget" class="account"></span>
+    </div>
+  </div>
+
+  <!-- Quick add -->
+  <div class="quick-add">
+    <span class="qa-icon">⚡</span>
+    <input type="text" id="quick-add-input" class="qa-input" placeholder="Quick add — type a name, @handle, email, or phone, then Enter…" />
+    <div class="qa-actions">
+      <button class="btn primary" id="quick-add-btn">+ Add contact</button>
+      <button class="btn ai" id="ai-import-btn">✨ Import list</button>
+      <button class="btn" id="export-pdf-btn" title="Save the whole CRM as a structured PDF">🖨 PDF</button>
+      <button class="btn" id="open-reactioner-btn" title="Open your Reactioner interview tool">🎤 Reactioner ↗</button>
+    </div>
+    <div class="qa-hint">Tip: paste “Marcus Lee @queabbq marcus@queabbq.com 919-555-0148” — handle, email and phone are detected automatically.</div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-view="pipeline">🪜 Pipeline</button>
+    <button class="tab" data-view="list">📜 List</button>
+    <button class="tab" data-view="settings">⚙️ Settings</button>
+  </div>
+
+  <div class="filter-bar" id="filter-bar"></div>
+
+  <div id="view-pipeline"></div>
+  <div id="view-list" style="display:none"></div>
+  <div id="view-settings" style="display:none"></div>
+
+</div>
+
+<div class="modal-back" id="modal-back"><div class="modal" id="modal"></div></div>
+<div class="toast" id="toast"></div>
+
+<!-- Drag-and-drop import overlay -->
+<div class="drop-overlay" id="drop-overlay">
+  <div class="drop-card">
+    <div class="big-icon">📥</div>
+    <h3>Drop to import</h3>
+    <p>Release a <strong>.csv</strong> or <strong>.json</strong> file to add contacts</p>
+  </div>
+</div>
+
+<!-- Structured printable document — only visible when printing / saving to PDF -->
+<div id="print-root" aria-hidden="true"></div>
+
+<script>
+/* ============================================================
+   SUPABASE CONFIG  —  shared with the Reactioner for cohesion.
+   The anon key is designed to be public; Row Level Security
+   protects each account's data. The CRM uses its own table
+   (crm_state) and reads the Reactioner's table (interview_state).
+   ============================================================ */
+const SUPABASE_URL = 'https://nxbasaeysxarbavomjha.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im54YmFzYWV5c3hhcmJhdm9tamhhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5OTk3MjcsImV4cCI6MjA5NTU3NTcyN30.qfIbEZ2S2cpwQZKQQ2uM3_I6c5CVaj4-JhN-E1bgeB0';
+const CRM_TABLE = 'crm_state';
+const REACTIONER_TABLE = 'interview_state';
+
+function cloudConfigured() {
+  return typeof SUPABASE_URL === 'string'
+      && SUPABASE_URL.indexOf('YOUR_') === -1
+      && /^https:\/\/.+/.test(SUPABASE_URL)
+      && typeof SUPABASE_ANON_KEY === 'string'
+      && SUPABASE_ANON_KEY.indexOf('YOUR_') === -1
+      && SUPABASE_ANON_KEY.length > 20;
+}
+const sb = (cloudConfigured() && window.supabase)
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+    })
+  : null;
+
+let currentUserId = null;
+let cloudUpdatedAt = null;
+let cloudTableMissing = false;
+let appStarted = false;
+
+/* ============================================================
+   DATA MODEL & STORAGE
+   ============================================================ */
+const LEGACY_KEY = 'culinary-crm-v1';
+function localCacheKey() { return currentUserId ? 'discovery-crm:' + currentUserId : LEGACY_KEY; }
+
+const DEFAULT_STAGES = [
+  { id: 'not-contacted', label: 'Not contacted', color: 'var(--stage-not-contacted)' },
+  { id: 'contacted',     label: 'Contacted',     color: 'var(--stage-contacted)' },
+  { id: 'scheduled',     label: 'Scheduled',     color: 'var(--stage-scheduled)' },
+  { id: 'talked-to',     label: 'Talked to',     color: 'var(--stage-talked-to)' },
+  { id: 'unsuitable',    label: 'Unsuitable',    color: 'var(--stage-unsuitable)' },
+  { id: 'cancelled',     label: 'Cancelled',     color: 'var(--stage-cancelled)' },
+];
+
+const DEFAULT_SEGMENTS = ['Food Truck Owner', 'Caterer', 'Hybrid (Truck + Catering)', 'Restaurant Owner', 'Broker', 'Other'];
+const DEFAULT_SOURCES = ['Personal Network', 'Cold Outreach', 'Referral', 'Event / Rally', 'Association (RDUFTA / CLTFTA)', 'Instagram', 'LinkedIn'];
+const DEFAULT_APPROACH = ['Text message', 'Phone call', 'Email', 'Direct message (IG/FB)', 'In-person (event)', 'In-person (walk-up)'];
+
+function uid() { return 'c-' + Math.random().toString(36).slice(2, 10); }
+
+function defaultContact() {
+  return {
+    id: uid(), name: '', company: '', role: '', phone: '', email: '', instagram: '',
+    segments: [], source: '', approachMethod: '', stage: 'not-contacted',
+    createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
+    nextFollowup: '', notes: '', interviews: []
+  };
+}
+function defaultInterview() {
+  return {
+    id: uid(), date: new Date().toISOString().slice(0, 10), painPoints: '', language: '',
+    nextSteps: '', transcript: '', recordingUrl: '', validationRxn: '', notes: '',
+    source: '', reactionSummary: null
+  };
+}
+function defaultFilters() {
+  return { segment: '', stage: '', source: '', hasEmail: false, hasPhone: false, hasInstagram: false };
+}
+function defaultIntegration() { return { reactionerUrl: '' }; }
+function defaultState() {
+  return {
+    contacts: [], segments: [...DEFAULT_SEGMENTS], sources: [...DEFAULT_SOURCES],
+    approachMethods: [...DEFAULT_APPROACH], activeView: 'pipeline', searchQuery: '',
+    filters: defaultFilters(), integration: defaultIntegration(),
+    aiSettings: { apiKey: '', model: 'claude-haiku-4-5-20251001' }
+  };
+}
+function migrate(s) {
+  if (!s || typeof s !== 'object') return defaultState();
+  if (!Array.isArray(s.contacts)) s.contacts = [];
+  if (!s.segments) s.segments = [...DEFAULT_SEGMENTS];
+  if (!s.sources) s.sources = [...DEFAULT_SOURCES];
+  if (!s.approachMethods) s.approachMethods = [...DEFAULT_APPROACH];
+  if (!s.aiSettings) s.aiSettings = { apiKey: '', model: 'claude-haiku-4-5-20251001' };
+  if (!s.integration) s.integration = defaultIntegration();
+  s.filters = Object.assign(defaultFilters(), s.filters || {});
+  return s;
+}
+function readCache(key) {
+  try { const raw = localStorage.getItem(key); return raw ? migrate(JSON.parse(raw)) : null; } catch (e) { return null; }
+}
+
+let state = readCache(LEGACY_KEY) || defaultState();
+
+/* ---- saving ---- */
+let cloudSaveTimer = null;
+function save() {
+  try { localStorage.setItem(localCacheKey(), JSON.stringify(state)); } catch (e) {}
+  updateContactCount();
+  scheduleCloudSave();
+}
+function scheduleCloudSave() {
+  if (!sb || !currentUserId || cloudTableMissing) return;
+  setSyncStatus('saving', 'Saving…');
+  clearTimeout(cloudSaveTimer);
+  cloudSaveTimer = setTimeout(cloudSaveNow, 800);
+}
+function isMissingTable(e) {
+  const m = ((e && (e.message || e.hint || e.code || e.details)) || '').toString().toLowerCase();
+  return m.includes('crm_state') || m.includes('does not exist') || m.includes('schema cache')
+      || m.includes('42p01') || m.includes('could not find the table');
+}
+async function cloudSaveNow() {
+  if (!sb || !currentUserId || cloudTableMissing) return;
+  const now = new Date().toISOString();
+  try {
+    const { error } = await sb.from(CRM_TABLE).upsert({ user_id: currentUserId, data: state, updated_at: now }, { onConflict: 'user_id' });
+    if (error) throw error;
+    cloudUpdatedAt = now;
+    setSyncStatus('ok', 'Synced');
+  } catch (e) {
+    if (isMissingTable(e)) { cloudTableMissing = true; setSyncStatus('err', 'Cloud table not set up'); return; }
+    setSyncStatus('err', 'Offline — saved locally');
+    clearTimeout(cloudSaveTimer);
+    cloudSaveTimer = setTimeout(cloudSaveNow, 5000);
+  }
+}
+async function cloudLoad(uidArg) {
+  const { data, error } = await sb.from(CRM_TABLE).select('data,updated_at').eq('user_id', uidArg).maybeSingle();
+  if (error) throw error;
+  return data;
+}
+async function cloudLoadReactioner(uidArg) {
+  const { data, error } = await sb.from(REACTIONER_TABLE).select('data,updated_at').eq('user_id', uidArg).maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+function setSyncStatus(kind, text) {
+  const pill = document.getElementById('sync-pill');
+  const t = document.getElementById('sync-text');
+  if (!pill || !t) return;
+  pill.classList.remove('ok', 'saving', 'err');
+  if (kind) pill.classList.add(kind);
+  t.textContent = text;
+}
+function updateContactCount() { /* count shown in filter bar */ }
+
+/* ============================================================
+   AUTH
+   ============================================================ */
+function buildAuthGate() {
+  const gate = document.getElementById('auth-gate');
+  gate.innerHTML = `
+    <div class="auth-card">
+      <div class="auth-logo"><svg viewBox="0 0 64 64" width="28" height="28" xmlns="http://www.w3.org/2000/svg"><rect x="19" y="14" width="26" height="36" rx="4" fill="#ffffff"/><rect x="26" y="10" width="12" height="8" rx="2.5" fill="#eef2ff" stroke="#4f46e5" stroke-width="2"/><circle cx="27" cy="27" r="2.3" fill="#4f46e5"/><circle cx="27" cy="36" r="2.3" fill="#4f46e5"/></svg></div>
+      <h2>Discovery CRM</h2>
+      <p class="auth-sub">Sign in to sync your contacts across devices.</p>
+      <form id="auth-form" autocomplete="on">
+        <input id="auth-email" type="email" required placeholder="you@example.com" autocomplete="email" />
+        <input id="auth-password" type="password" required minlength="6" placeholder="Password (min 6 characters)" autocomplete="current-password" />
+        <div class="auth-row">
+          <button class="btn primary" id="auth-signin" type="submit">Sign in</button>
+          <button class="btn" id="auth-signup" type="button">Create account</button>
+        </div>
+        <button class="link-btn" id="auth-reset" type="button">Forgot password?</button>
+        <div class="auth-msg" id="auth-msg"></div>
+      </form>
+      <div class="auth-foot"><button class="link-btn" id="auth-local">Use without an account (this device only)</button></div>
+    </div>`;
+  const emailInput = gate.querySelector('#auth-email');
+  const pwInput = gate.querySelector('#auth-password');
+  const msg = gate.querySelector('#auth-msg');
+  const setErr = (m) => { msg.className = 'auth-msg err'; msg.textContent = m; };
+  const setOk = (m) => { msg.className = 'auth-msg ok'; msg.textContent = m; };
+
+  gate.querySelector('#auth-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = emailInput.value.trim(); const password = pwInput.value;
+    if (!email || !password || !sb) return;
+    setOk('Signing in…');
+    try {
+      const res = await sb.auth.signInWithPassword({ email, password });
+      if (res.error) throw res.error;
+    } catch (err) { setErr('Wrong email or password. New here? Click Create account.'); }
+  });
+  gate.querySelector('#auth-signup').addEventListener('click', async () => {
+    const email = emailInput.value.trim(); const password = pwInput.value;
+    if (!email) { setErr('Enter an email first.'); return; }
+    if (!password || password.length < 6) { setErr('Pick a password of at least 6 characters.'); return; }
+    setOk('Creating account…');
+    try {
+      const res = await sb.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin + window.location.pathname } });
+      if (res.error) throw res.error;
+      if (res.data && res.data.session) { /* onAuthStateChange handles it */ }
+      else setOk('Account created. If asked, check your inbox to confirm, then sign in.');
+    } catch (err) {
+      const m = (err && err.message || '').toLowerCase();
+      if (m.includes('already')) setErr('That email already has an account. Use Sign in or Forgot password.');
+      else setErr('Could not create account: ' + (err.message || 'unknown error'));
+    }
+  });
+  gate.querySelector('#auth-reset').addEventListener('click', async () => {
+    const email = emailInput.value.trim();
+    if (!email) { setErr('Enter your email above first, then click Forgot password.'); return; }
+    try {
+      const res = await sb.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + window.location.pathname });
+      if (res.error) throw res.error;
+      setOk('Check your inbox — we sent a reset link to ' + email + '.');
+    } catch (err) { setErr('Could not send reset email: ' + (err.message || 'unknown error')); }
+  });
+  gate.querySelector('#auth-local').addEventListener('click', () => {
+    hideAuthGate(); startLocalOnly();
+  });
+  return gate;
+}
+function showAuthGate() { const g = document.getElementById('auth-gate'); g.style.display = 'flex'; document.getElementById('app-container').style.display = 'none'; }
+function hideAuthGate() { const g = document.getElementById('auth-gate'); g.style.display = 'none'; document.getElementById('app-container').style.display = ''; }
+
+function buildAccountWidget(email) {
+  const w = document.getElementById('account-widget');
+  if (!w) return;
+  w.innerHTML = `<span class="who" title="${escapeHtml(email)}">${escapeHtml(email)}</span><button class="btn tiny ghost" id="sign-out-btn">Sign out</button>`;
+  const b = document.getElementById('sign-out-btn');
+  if (b) b.addEventListener('click', async () => { try { if (sb) await sb.auth.signOut(); } catch (e) {} location.reload(); });
+}
+
+async function loadUserState(uidArg) {
+  const cached = readCache(localCacheKey());
+  if (cached) state = cached;
+  let row = null;
+  try { row = await cloudLoad(uidArg); }
+  catch (e) { if (isMissingTable(e)) cloudTableMissing = true; }
+  if (row && row.data && Array.isArray(row.data.contacts)) {
+    state = migrate(row.data);
+    cloudUpdatedAt = row.updated_at;
+    try { localStorage.setItem(localCacheKey(), JSON.stringify(state)); } catch (e) {}
+  } else {
+    // No cloud data for this account yet — offer to bring in legacy/local data.
+    const legacy = readCache(LEGACY_KEY);
+    const localHas = state.contacts && state.contacts.length;
+    if (!localHas && legacy && legacy.contacts && legacy.contacts.length) {
+      if (confirm('Bring the ' + legacy.contacts.length + ' contact(s) already saved in this browser into your account?')) {
+        state = legacy;
+      }
+    }
+    if (!cloudTableMissing) await cloudSaveNow();
+  }
+}
+async function onSignedIn(session) {
+  if (appStarted) return;
+  appStarted = true;
+  currentUserId = session.user.id;
+  hideAuthGate();
+  buildAccountWidget(session.user.email);
+  setSyncStatus('saving', 'Loading…');
+  await loadUserState(currentUserId);
+  setSyncStatus(cloudTableMissing ? 'err' : 'ok', cloudTableMissing ? 'Cloud table not set up' : 'Synced');
+  bootApp();
+  startFocusRefresh();
+}
+function startLocalOnly() {
+  if (appStarted) return;
+  appStarted = true;
+  setSyncStatus('', 'This device only');
+  bootApp();
+}
+async function refreshFromCloud() {
+  if (!sb || !currentUserId || cloudTableMissing) return;
+  try {
+    const row = await cloudLoad(currentUserId);
+    if (row && row.updated_at && row.updated_at !== cloudUpdatedAt && row.data && Array.isArray(row.data.contacts)) {
+      state = migrate(row.data); cloudUpdatedAt = row.updated_at;
+      try { localStorage.setItem(localCacheKey(), JSON.stringify(state)); } catch (e) {}
+      setView(state.activeView || 'pipeline');
+      setSyncStatus('ok', 'Synced — updated');
+    }
+  } catch (e) {}
+}
+function startFocusRefresh() {
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshFromCloud(); });
+  window.addEventListener('focus', refreshFromCloud);
+}
+async function handlePasswordRecovery() {
+  const newPw = window.prompt('Enter a new password (at least 6 characters):');
+  if (newPw == null) { try { if (sb) await sb.auth.signOut(); } catch (e) {} location.reload(); return; }
+  if (newPw.length < 6) { window.alert('Password must be at least 6 characters.'); return handlePasswordRecovery(); }
+  try { const res = await sb.auth.updateUser({ password: newPw }); if (res.error) throw res.error; window.alert('Password updated.'); location.reload(); }
+  catch (err) { window.alert('Could not update password: ' + (err.message || 'unknown error')); }
+}
+
+/* ---- entry point ---- */
+function boot() {
+  if (!cloudConfigured() || !window.supabase || !sb) { startLocalOnly(); return; }
+  buildAuthGate();
+  showAuthGate();
+  sb.auth.getSession().then((r) => { if (r && r.data && r.data.session) onSignedIn(r.data.session); });
+  sb.auth.onAuthStateChange((event, session) => {
+    if (event === 'PASSWORD_RECOVERY') { handlePasswordRecovery(); return; }
+    if (session) onSignedIn(session);
+    else if (appStarted) location.reload();
+  });
+}
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+function getStage(id) { return DEFAULT_STAGES.find(s => s.id === id) || DEFAULT_STAGES[0]; }
+function escapeHtml(s) { if (s === null || s === undefined) return ''; return String(s).replace(/[&<>"']/g, ch => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[ch])); }
+function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2200); }
+
+function igHandle(raw) {
+  if (!raw) return '';
+  let h = String(raw).trim();
+  h = h.replace(/^https?:\/\//i, '');
+  h = h.replace(/^(www\.)?instagram\.com\//i, '');
+  h = h.replace(/[/?#].*$/, '');
+  h = h.replace(/^@+/, '');
+  return h.trim();
+}
+function igUrl(raw) { const h = igHandle(raw); return h ? 'https://instagram.com/' + h : ''; }
+function telHref(raw) { return String(raw || '').replace(/[^\d+]/g, ''); }
+function igChip(c) { const h = igHandle(c.instagram); return h ? `<a href="${igUrl(c.instagram)}" target="_blank" rel="noopener" class="contact-link ig" onclick="event.stopPropagation()">📷 @${escapeHtml(h)}</a>` : ''; }
+function emailChip(c) { const e = (c.email || '').trim(); return e ? `<a href="mailto:${escapeHtml(e)}" class="contact-link email" onclick="event.stopPropagation()">✉ ${escapeHtml(e)}</a>` : ''; }
+function phoneChip(c) { const p = (c.phone || '').trim(); return p ? `<a href="tel:${escapeHtml(telHref(p))}" class="contact-link phone" onclick="event.stopPropagation()">📞 ${escapeHtml(p)}</a>` : ''; }
+
+/* ============================================================
+   FILTERS
+   ============================================================ */
+function filteredContacts() {
+  const q = (state.searchQuery || '').toLowerCase().trim();
+  const f = state.filters || defaultFilters();
+  return state.contacts.filter(c => {
+    if (q) {
+      const hay = (c.name + ' ' + c.company + ' ' + c.role + ' ' + (c.segments || []).join(' ') + ' ' + (c.instagram || '') + ' ' + (c.email || '') + ' ' + (c.phone || '') + ' ' + (c.notes || '')).toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    if (f.segment && !(c.segments || []).includes(f.segment)) return false;
+    if (f.stage && c.stage !== f.stage) return false;
+    if (f.source && c.source !== f.source) return false;
+    if (f.hasEmail && !(c.email || '').trim()) return false;
+    if (f.hasPhone && !(c.phone || '').trim()) return false;
+    if (f.hasInstagram && !igHandle(c.instagram)) return false;
+    return true;
+  });
+}
+function filtersActive() {
+  const f = state.filters || {};
+  return !!(f.segment || f.stage || f.source || f.hasEmail || f.hasPhone || f.hasInstagram);
+}
+
+/* ============================================================
+   VIEW SWITCHING
+   ============================================================ */
+const VIEWS = ['pipeline', 'list', 'settings'];
+function setView(v) {
+  state.activeView = v; save();
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === v));
+  VIEWS.forEach(name => { const el = document.getElementById('view-' + name); if (el) el.style.display = (name === v) ? '' : 'none'; });
+  const fb = document.getElementById('filter-bar');
+  if (fb) fb.style.display = (v === 'settings') ? 'none' : '';
+  if (v !== 'settings') renderFilterBar();
+  if (v === 'pipeline') renderPipeline();
+  if (v === 'list') renderList();
+  if (v === 'settings') renderSettings();
+}
+
+/* ============================================================
+   FILTER BAR
+   ============================================================ */
+function renderFilterBar() {
+  const bar = document.getElementById('filter-bar');
+  if (!bar) return;
+  const f = state.filters || defaultFilters();
+  const segOpts = '<option value="">All ICP segments</option>' + state.segments.map(s => `<option value="${escapeHtml(s)}" ${f.segment === s ? 'selected' : ''}>${escapeHtml(s)}</option>`).join('');
+  const stageOpts = '<option value="">All stages</option>' + DEFAULT_STAGES.map(s => `<option value="${s.id}" ${f.stage === s.id ? 'selected' : ''}>${escapeHtml(s.label)}</option>`).join('');
+  const srcOpts = '<option value="">All sources</option>' + state.sources.map(s => `<option value="${escapeHtml(s)}" ${f.source === s ? 'selected' : ''}>${escapeHtml(s)}</option>`).join('');
+  const active = filtersActive();
+  const total = (state.contacts || []).length;
+  const shown = filteredContacts().length;
+  const countText = (active || (state.searchQuery || '').trim()) ? `${shown} of ${total} shown` : `${total} contact${total === 1 ? '' : 's'}`;
+  bar.innerHTML = `
+    <span class="filter-label">Filter</span>
+    <select id="filter-segment" title="Filter by ICP segment / tag">${segOpts}</select>
+    <select id="filter-stage" title="Filter by pipeline stage">${stageOpts}</select>
+    <select id="filter-source" title="Filter by source channel">${srcOpts}</select>
+    <button class="filter-chip ${f.hasEmail ? 'active' : ''}" data-has="hasEmail">📧 Has email</button>
+    <button class="filter-chip ${f.hasPhone ? 'active' : ''}" data-has="hasPhone">📞 Has phone</button>
+    <button class="filter-chip ${f.hasInstagram ? 'active' : ''}" data-has="hasInstagram">📷 Has Instagram</button>
+    ${active ? '<button class="btn tiny" id="filter-clear">✕ Clear filters</button>' : ''}
+    <span class="filter-count">${countText}</span>`;
+  document.getElementById('filter-segment').addEventListener('change', e => { state.filters.segment = e.target.value; save(); applyFilterChange(); });
+  document.getElementById('filter-stage').addEventListener('change', e => { state.filters.stage = e.target.value; save(); applyFilterChange(); });
+  document.getElementById('filter-source').addEventListener('change', e => { state.filters.source = e.target.value; save(); applyFilterChange(); });
+  bar.querySelectorAll('.filter-chip').forEach(chip => chip.addEventListener('click', () => { const k = chip.dataset.has; state.filters[k] = !state.filters[k]; save(); applyFilterChange(); }));
+  const clearBtn = document.getElementById('filter-clear');
+  if (clearBtn) clearBtn.addEventListener('click', () => { state.filters = defaultFilters(); save(); applyFilterChange(); });
+}
+function applyFilterChange() {
+  renderFilterBar();
+  if (state.activeView === 'pipeline') renderPipeline();
+  if (state.activeView === 'list') renderList();
+}
+
+/* ============================================================
+   PIPELINE VIEW
+   ============================================================ */
+function renderPipeline() {
+  const wrap = document.getElementById('view-pipeline');
+  const contacts = filteredContacts();
+  let html = '<div class="kanban">';
+  for (const stage of DEFAULT_STAGES) {
+    const stageContacts = contacts.filter(c => c.stage === stage.id);
+    html += `<div class="kanban-col" data-stage="${stage.id}">
+      <h3><span class="stage-dot" style="background:${stage.color}"></span>${escapeHtml(stage.label)}<span class="count">${stageContacts.length}</span></h3>
+      <div class="kanban-cards">`;
+    if (stageContacts.length === 0) {
+      html += `<div style="color:var(--muted);font-size:12px;padding:8px 0;font-style:italic">Drop a card here</div>`;
+    } else {
+      for (const c of stageContacts) {
+        const interviewCount = (c.interviews || []).length;
+        const segs = (c.segments || []).slice(0, 2);
+        const links = [igChip(c), emailChip(c), phoneChip(c)].filter(Boolean).join('');
+        html += `<div class="contact-card" data-id="${c.id}" draggable="true" title="Drag to move, or click to open">
+          <button class="card-del" data-del="${c.id}" title="Delete contact">🗑</button>
+          <div class="name">${escapeHtml(c.name || '(Unnamed)')}</div>
+          ${c.company ? `<div class="company">${escapeHtml(c.company)}${c.role ? ' · ' + escapeHtml(c.role) : ''}</div>` : (c.role ? `<div class="company">${escapeHtml(c.role)}</div>` : '')}
+          ${links ? `<div class="links">${links}</div>` : ''}
+          <div class="meta">
+            ${segs.map(s => `<span class="tag">${escapeHtml(s)}</span>`).join('')}
+            ${interviewCount > 0 ? `<span class="tag interviews">📝 ${interviewCount} interview${interviewCount === 1 ? '' : 's'}</span>` : ''}
+          </div>
+        </div>`;
+      }
+    }
+    html += `</div></div>`;
+  }
+  html += '</div>';
+  wrap.innerHTML = html;
+
+  let dragMoved = false;
+  wrap.querySelectorAll('.card-del').forEach(b => b.addEventListener('click', e => {
+    e.stopPropagation();
+    deleteContact(b.dataset.del);
+  }));
+  wrap.querySelectorAll('.contact-card').forEach(card => {
+    card.addEventListener('click', () => { if (dragMoved) { dragMoved = false; return; } openContactDetail(card.dataset.id); });
+    card.addEventListener('dragstart', e => { dragMoved = true; e.dataTransfer.setData('text/plain', card.dataset.id); e.dataTransfer.effectAllowed = 'move'; card.classList.add('dragging'); });
+    card.addEventListener('dragend', () => { card.classList.remove('dragging'); wrap.querySelectorAll('.kanban-col.drop-target').forEach(c => c.classList.remove('drop-target')); setTimeout(() => { dragMoved = false; }, 50); });
+  });
+  wrap.querySelectorAll('.kanban-col').forEach(col => {
+    col.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; col.classList.add('drop-target'); });
+    col.addEventListener('dragleave', e => { if (!col.contains(e.relatedTarget)) col.classList.remove('drop-target'); });
+    col.addEventListener('drop', e => {
+      e.preventDefault(); col.classList.remove('drop-target');
+      const id = e.dataTransfer.getData('text/plain'); const newStage = col.dataset.stage;
+      const contact = state.contacts.find(x => x.id === id);
+      if (contact && contact.stage !== newStage) { contact.stage = newStage; contact.updatedAt = new Date().toISOString(); save(); renderPipeline(); showToast(`Moved to "${getStage(newStage).label}"`); }
+    });
+  });
+}
+
+function deleteContact(id) {
+  const c = state.contacts.find(x => x.id === id);
+  if (!c) return;
+  if (!confirm(`Delete ${c.name || 'this contact'} and all their interviews?`)) return;
+  state.contacts = state.contacts.filter(x => x.id !== id);
+  save();
+  if (state.activeView === 'pipeline') renderPipeline();
+  if (state.activeView === 'list') renderList();
+  renderFilterBar();
+  showToast('Contact deleted');
+}
+
+/* ============================================================
+   LIST VIEW
+   ============================================================ */
+function renderList() {
+  const wrap = document.getElementById('view-list');
+  const contacts = filteredContacts();
+  if (contacts.length === 0) {
+    wrap.innerHTML = `<div class="list-table-wrap empty-state">
+      <div class="big-icon">🗂</div>
+      <h3>No contacts yet</h3>
+      <p>Use the <strong>Quick add</strong> bar above, click <strong>✨ Import list</strong>, or drag a CSV/JSON file onto the window.</p>
+    </div>`;
+    return;
+  }
+  let html = '<div class="list-table-wrap"><table class="list"><thead><tr>';
+  html += '<th>Name</th><th>Company</th><th>Role</th><th>Instagram</th><th>Email</th><th>Phone</th><th>Segments</th><th>Stage</th><th>Source</th><th>Last interview</th><th></th>';
+  html += '</tr></thead><tbody>';
+  for (const c of contacts) {
+    const stage = getStage(c.stage);
+    const interviews = c.interviews || [];
+    const lastInt = interviews.length > 0 ? interviews.map(i => i.date).filter(Boolean).sort().pop() : '';
+    const segs = (c.segments || []).join(', ');
+    const igh = igHandle(c.instagram);
+    html += `<tr data-id="${c.id}">
+      <td><strong>${escapeHtml(c.name || '(Unnamed)')}</strong></td>
+      <td>${escapeHtml(c.company || '')}</td>
+      <td>${escapeHtml(c.role || '')}</td>
+      <td>${igh ? `<a href="${igUrl(c.instagram)}" target="_blank" rel="noopener" class="contact-link ig" onclick="event.stopPropagation()">@${escapeHtml(igh)}</a>` : '<span style="color:var(--muted)">—</span>'}</td>
+      <td>${(c.email || '').trim() ? `<a href="mailto:${escapeHtml(c.email.trim())}" class="contact-link email" onclick="event.stopPropagation()">✉</a>` : '<span style="color:var(--muted)">—</span>'}</td>
+      <td>${(c.phone || '').trim() ? `<a href="tel:${escapeHtml(telHref(c.phone))}" class="contact-link phone" onclick="event.stopPropagation()">📞</a>` : '<span style="color:var(--muted)">—</span>'}</td>
+      <td>${escapeHtml(segs)}</td>
+      <td><span class="stage-pill" style="background:${stage.color}">${escapeHtml(stage.label)}</span></td>
+      <td>${escapeHtml(c.source || '')}</td>
+      <td>${escapeHtml(lastInt || '—')}</td>
+      <td><button class="btn tiny danger" data-del="${c.id}" onclick="event.stopPropagation()" title="Delete">🗑</button></td>
+    </tr>`;
+  }
+  html += '</tbody></table></div>';
+  wrap.innerHTML = html;
+  wrap.querySelectorAll('tbody tr').forEach(tr => tr.addEventListener('click', () => openContactDetail(tr.dataset.id)));
+  wrap.querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); deleteContact(b.dataset.del); }));
+}
+
+/* ============================================================
+   SETTINGS VIEW
+   ============================================================ */
+function renderSettings() {
+  const wrap = document.getElementById('view-settings');
+  const cloudNote = cloudTableMissing
+    ? `<p style="background:#fef2f2;border:1px solid #f3c9c9;color:#b91c1c;padding:9px 12px;border-radius:9px;font-size:12.5px">⚠ The <code>crm_state</code> table isn't set up in Supabase yet, so your data is saving locally only. See the setup guide to create it (one SQL snippet) and cloud sync turns on automatically.</p>`
+    : (currentUserId ? `<p style="color:#15803d;font-size:12.5px">✓ Cloud sync is on. Your data is saved to your account and syncs across devices.</p>` : `<p style="color:var(--muted);font-size:12.5px">Running on this device only (not signed in). Sign in to sync across devices.</p>`);
+  wrap.innerHTML = `
+    <div class="settings-grid">
+      <div class="panel">
+        <h3>ICP Segments</h3>
+        <p style="color:var(--muted);font-size:13px">Tags you attach to contacts. Used to auto-tag imported research lists.</p>
+        <div class="tag-list" id="segments-list"></div>
+        <div style="display:flex;gap:6px"><input type="text" id="new-segment" placeholder="Add new segment…" style="flex:1" /><button class="btn" id="add-segment">Add</button></div>
+      </div>
+      <div class="panel">
+        <h3>Sources</h3>
+        <p style="color:var(--muted);font-size:13px">Where contacts come from.</p>
+        <div class="tag-list" id="sources-list"></div>
+        <div style="display:flex;gap:6px"><input type="text" id="new-source" placeholder="Add new source…" style="flex:1" /><button class="btn" id="add-source">Add</button></div>
+      </div>
+      <div class="panel">
+        <h3>Approach methods</h3>
+        <p style="color:var(--muted);font-size:13px">How you first reached out.</p>
+        <div class="tag-list" id="approach-list"></div>
+        <div style="display:flex;gap:6px"><input type="text" id="new-approach" placeholder="Add new method…" style="flex:1" /><button class="btn" id="add-approach">Add</button></div>
+      </div>
+      <div class="panel" style="background:linear-gradient(135deg,#eef2ff,#ffffff)">
+        <h3>🎤 Reactioner integration</h3>
+        <p style="color:var(--muted);font-size:13px;line-height:1.55">Your live Reactioner URL. The <strong>Reaction interview</strong> button on each contact opens it with that person pre-loaded as a participant. <strong>Pull reactions</strong> reads their ❤️/👍/👎 back into the contact.</p>
+        <label class="field-label">Reactioner URL</label>
+        <input type="url" id="reactioner-url" value="${escapeHtml(state.integration?.reactionerUrl || '')}" placeholder="https://reactioner.pages.dev" />
+        <div style="display:flex;gap:8px;align-items:center;margin-top:10px">
+          <button class="btn primary" id="save-reactioner">Save</button>
+          <span style="font-size:12px;color:var(--muted)">Cohesion works when both tools use the same Supabase account.</span>
+        </div>
+      </div>
+      <div class="panel span" style="background:linear-gradient(135deg,#faf5ff,#ffffff)">
+        <h3>✨ AI transcript extraction (optional, Claude API)</h3>
+        <p style="color:var(--muted);font-size:13px;line-height:1.55">Paste a Fathom transcript into any interview and click <strong>✨ Extract</strong> — Claude pulls Mom-Test-validated pain points and verbatim quotes. Needs an Anthropic API key (free credits at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>). Stored in your browser only; never committed to your site.</p>
+        <div class="form-row">
+          <div class="form-field">
+            <label class="field-label">Anthropic API key</label>
+            <input type="password" id="ai-api-key" placeholder="sk-ant-…" value="${escapeHtml(state.aiSettings?.apiKey || '')}" autocomplete="off" />
+            <small style="color:var(--muted);font-size:11px;margin-top:4px">Saved to this browser only. Sent only to api.anthropic.com.</small>
+          </div>
+          <div class="form-field">
+            <label class="field-label">Model</label>
+            <select id="ai-model">
+              <option value="claude-haiku-4-5-20251001" ${(state.aiSettings?.model || '').includes('haiku') ? 'selected' : ''}>Claude Haiku 4.5 (fast, ~$0.01/transcript)</option>
+              <option value="claude-sonnet-4-6" ${(state.aiSettings?.model || '').includes('sonnet') ? 'selected' : ''}>Claude Sonnet 4.6 (higher quality, ~$0.05/transcript)</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <button class="btn primary" id="save-ai-settings">Save</button>
+          <button class="btn" id="test-ai-key">Test connection</button>
+          <button class="btn tiny danger" id="clear-ai-key">Clear key</button>
+          <span id="ai-test-status" style="font-size:13px;color:var(--muted)"></span>
+        </div>
+      </div>
+      <div class="panel span">
+        <h3>Data &amp; account</h3>
+        ${cloudNote}
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px">
+          <button class="btn primary" id="export-json-btn">⬇ Download backup (.json)</button>
+          <button class="btn" id="export-csv-btn">⬇ Export contacts to CSV</button>
+          <button class="btn" id="import-json-btn">⬆ Import backup (.json)</button>
+          <button class="btn" id="import-csv-btn">⬆ Import contacts from CSV</button>
+          <input type="file" id="import-file" accept=".json,.csv" style="display:none" />
+          <button class="btn danger" id="wipe-btn">🗑 Wipe everything</button>
+        </div>
+      </div>
+    </div>`;
+
+  renderTagList('segments-list', state.segments, (i) => { state.segments.splice(i, 1); save(); renderSettings(); });
+  renderTagList('sources-list', state.sources, (i) => { state.sources.splice(i, 1); save(); renderSettings(); });
+  renderTagList('approach-list', state.approachMethods, (i) => { state.approachMethods.splice(i, 1); save(); renderSettings(); });
+
+  ['segment', 'source', 'approach'].forEach(key => {
+    document.getElementById('add-' + key).addEventListener('click', () => {
+      const inp = document.getElementById('new-' + key); const v = inp.value.trim(); if (!v) return;
+      const arr = key === 'segment' ? state.segments : key === 'source' ? state.sources : state.approachMethods;
+      if (!arr.includes(v)) arr.push(v); inp.value = ''; save(); renderSettings();
+    });
+  });
+
+  document.getElementById('save-reactioner').addEventListener('click', () => {
+    state.integration = state.integration || defaultIntegration();
+    state.integration.reactionerUrl = document.getElementById('reactioner-url').value.trim();
+    save(); showToast('Reactioner URL saved');
+  });
+
+  document.getElementById('export-json-btn').addEventListener('click', exportJson);
+  document.getElementById('export-csv-btn').addEventListener('click', exportCsv);
+  document.getElementById('import-json-btn').addEventListener('click', () => { const f = document.getElementById('import-file'); f.dataset.kind = 'json'; f.click(); });
+  document.getElementById('import-csv-btn').addEventListener('click', () => { const f = document.getElementById('import-file'); f.dataset.kind = 'csv'; f.click(); });
+  document.getElementById('import-file').addEventListener('change', async (e) => {
+    const file = e.target.files[0]; if (!file) return;
+    const kind = e.target.dataset.kind; const txt = await file.text();
+    if (kind === 'json') importJson(txt); else importCsv(txt);
+    e.target.value = '';
+  });
+  document.getElementById('wipe-btn').addEventListener('click', () => {
+    if (!confirm('Delete ALL contacts, interviews, and settings? This cannot be undone.')) return;
+    const keepIntegration = state.integration; state = defaultState(); state.integration = keepIntegration || defaultIntegration();
+    save(); renderSettings(); setView('pipeline'); showToast('Wiped clean');
+  });
+
+  document.getElementById('save-ai-settings').addEventListener('click', () => {
+    state.aiSettings = state.aiSettings || {};
+    state.aiSettings.apiKey = document.getElementById('ai-api-key').value.trim();
+    state.aiSettings.model = document.getElementById('ai-model').value;
+    save(); showToast('AI settings saved');
+  });
+  document.getElementById('clear-ai-key').addEventListener('click', () => {
+    if (!confirm('Clear the saved API key?')) return;
+    state.aiSettings.apiKey = ''; save(); renderSettings(); showToast('API key cleared');
+  });
+  document.getElementById('test-ai-key').addEventListener('click', async () => {
+    const key = document.getElementById('ai-api-key').value.trim();
+    const model = document.getElementById('ai-model').value;
+    const statusEl = document.getElementById('ai-test-status');
+    if (!key) { statusEl.textContent = '⚠ Enter an API key first'; statusEl.style.color = '#c62828'; return; }
+    statusEl.innerHTML = '<span class="spinner" style="border-top-color:#1a1a1a"></span>Testing…'; statusEl.style.color = 'var(--muted)';
+    try {
+      const r = await callClaude(key, model, 'Reply with the single word: ok', 10);
+      statusEl.textContent = (r && r.toLowerCase().includes('ok')) ? '✓ Connection works' : '✓ Got a response. Probably OK.';
+      statusEl.style.color = '#15803d';
+    } catch (err) { statusEl.textContent = '✗ ' + err.message; statusEl.style.color = '#c62828'; }
+  });
+}
+function renderTagList(elId, items, onRemove) {
+  const el = document.getElementById(elId);
+  if (!items || items.length === 0) { el.innerHTML = '<span style="color:var(--muted);font-size:13px;font-style:italic">None</span>'; return; }
+  el.innerHTML = items.map((v, i) => `<span class="item">${escapeHtml(v)}<button data-i="${i}" title="Remove">×</button></span>`).join('');
+  el.querySelectorAll('button').forEach(b => b.addEventListener('click', () => onRemove(parseInt(b.dataset.i, 10))));
+}
+
+/* ============================================================
+   AI EXTRACTION (Claude API) — preserved
+   ============================================================ */
+async function callClaude(apiKey, model, prompt, maxTokens) {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true', 'content-type': 'application/json' },
+    body: JSON.stringify({ model, max_tokens: maxTokens || 2048, messages: [{ role: 'user', content: prompt }] })
+  });
+  if (!res.ok) {
+    let detail = '';
+    try { const j = await res.json(); detail = ' — ' + (j.error?.message || JSON.stringify(j.error || j)); } catch {}
+    throw new Error(`HTTP ${res.status}${detail}`);
+  }
+  const data = await res.json();
+  return data.content?.[0]?.text || '';
+}
+
+async function extractFromTranscript(transcript) {
+  const apiKey = state.aiSettings?.apiKey;
+  const model = state.aiSettings?.model || 'claude-haiku-4-5-20251001';
+  if (!apiKey) throw new Error('No API key set — go to Settings → AI extraction');
+  const prompt = `You are a rigorous customer discovery analyst trained in three methodologies:
+- THE MOM TEST (Rob Fitzpatrick): real pain shows up as past behavior, not hypotheticals. Compliments don't count. "I would totally pay for that" doesn't count. Workaround behavior and specific past events DO count.
+- LEAN STARTUP (Eric Ries): validated learning means evidence, not opinions. Strong pain has frequency, intensity, and economic impact.
+- TRACTION (Weinberg & Mares): commercially viable pain is recurring, costly, and the customer is already trying to solve it (or willing to pay).
+
+Read the interview transcript below and produce THREE outputs:
+
+═══ 1. VALIDATED PAIN POINTS ═══
+A pain qualifies as VALIDATED ONLY if at least one of these is true in the transcript:
+  ✓ The interviewee describes a specific past instance ("last Tuesday…", "two weeks ago…", "every Friday I…")
+  ✓ They describe an active workaround they're already doing (cobbled-together solution, spreadsheet, hired person, etc.)
+  ✓ They mention money or time spent dealing with it ($X/mo, Y hours/week)
+  ✓ They mention having tried other solutions
+  ✓ They show strong emotional response (frustration, anger, anxiety) about a concrete situation
+
+Score each validated pain:
+  - "strong" = multiple validation signals present (e.g. specific past event AND workaround AND $/hours quantified)
+  - "medium" = one clear signal present (specific event OR workaround)
+  - "weak" = signal is present but mild (frustration mentioned but no specific event/workaround)
+
+Tag relevant signals from this set: ["frequent", "intense", "costly", "active_workaround", "tried_solutions", "specific_past_event", "emotional"]
+
+═══ 2. RED FLAGS — failed Mom Test ═══
+Things the interviewee said that SOUND like pains but fail validation. These must NOT be treated as real customer signal. Common patterns:
+  ✗ Hypotheticals: "It would be cool if…", "I would totally use that"
+  ✗ Compliments: "Yeah that sounds great", "That's a problem for sure"
+  ✗ Vague agreement to leading questions without specifics
+  ✗ Future-tense intentions ("I'm going to start doing X")
+  ✗ Pains they acknowledged but show no behavior around (haven't tried to solve, no money/time spent)
+
+For each red flag, name what was claimed and why it fails Mom Test.
+
+═══ 3. VERBATIM LANGUAGE ═══
+Direct word-for-word quotes from the interviewee (NOT the interviewer) that:
+  - Describe a real pain in their own words
+  - Use distinctive, memorable phrasing
+  - Could become marketing copy or interview script language
+Must be exact quotes — no paraphrasing.
+
+Return ONLY valid JSON in exactly this format, no other text:
+{
+  "validatedPains": [
+    {
+      "pain": "Concise description of the pain",
+      "evidence": "Specific past instance, workaround, or quantified cost they mentioned",
+      "momTestScore": "strong",
+      "signals": ["specific_past_event", "active_workaround", "costly"]
+    }
+  ],
+  "redFlags": [
+    {
+      "claim": "What the interviewee said that sounded like a pain",
+      "issue": "Why it fails Mom Test (hypothetical / compliment / vague / no behavior shown)"
+    }
+  ],
+  "language": ["Direct quote one", "Direct quote two"]
+}
+
+Be ruthless. A 30-minute transcript typically yields 2-5 validated pains, 2-6 red flags, and 4-8 quotes. Better to surface fewer truly validated pains than many weak ones — that's the whole point of the Mom Test.
+
+Transcript:
+"""
+${transcript}
+"""`;
+  const responseText = await callClaude(apiKey, model, prompt, 4096);
+  let jsonText = responseText.trim();
+  const codeBlockMatch = jsonText.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+  if (codeBlockMatch) jsonText = codeBlockMatch[1];
+  const braceMatch = jsonText.match(/\{[\s\S]*\}/);
+  if (braceMatch) jsonText = braceMatch[0];
+  let parsed;
+  try { parsed = JSON.parse(jsonText); }
+  catch (e) { throw new Error('Claude returned a response I couldn\'t parse. Raw response: ' + responseText.slice(0, 200)); }
+  if (!Array.isArray(parsed.validatedPains)) {
+    parsed.validatedPains = Array.isArray(parsed.painPoints)
+      ? parsed.painPoints.map(p => typeof p === 'string' ? { pain: p, evidence: '', momTestScore: 'medium', signals: [] } : p) : [];
+  }
+  if (!Array.isArray(parsed.redFlags)) parsed.redFlags = [];
+  if (!Array.isArray(parsed.language)) parsed.language = [];
+  parsed.validatedPains = parsed.validatedPains.map(p => ({
+    pain: p.pain || '', evidence: p.evidence || '',
+    momTestScore: ['strong', 'medium', 'weak'].includes(p.momTestScore) ? p.momTestScore : 'medium',
+    signals: Array.isArray(p.signals) ? p.signals : []
+  })).filter(p => p.pain);
+  return parsed;
+}
+
+function showExtractionResult(result, contact, interview) {
+  const validatedHtml = result.validatedPains.length
+    ? result.validatedPains.map(p => `
+        <div class="validated-pain">
+          <div class="pain-head">
+            <div class="pain-text">${escapeHtml(p.pain)}</div>
+            <span class="badge badge-${p.momTestScore}">${escapeHtml(p.momTestScore)}</span>
+          </div>
+          ${p.evidence ? `<div class="evidence">↳ ${escapeHtml(p.evidence)}</div>` : ''}
+          ${p.signals?.length ? `<div class="signals">${p.signals.map(s => `<span class="signal-tag">${escapeHtml(s.replace(/_/g, ' '))}</span>`).join('')}</div>` : ''}
+        </div>`).join('')
+    : '<p class="section-note">(Nothing passed Mom Test validation. That itself is a useful signal — the interview may have been too hypothetical, or the customer may not have this pain strongly.)</p>';
+  const redFlagsHtml = result.redFlags.length
+    ? result.redFlags.map(rf => `<div class="red-flag"><div class="claim">"${escapeHtml(rf.claim)}"</div><div class="issue">↳ ${escapeHtml(rf.issue)}</div></div>`).join('') : '';
+  const quotesHtml = result.language.length
+    ? result.language.map(q => `<div class="quote-item">"${escapeHtml(q)}"</div>`).join('') : '<p class="section-note">(No standout quotes extracted)</p>';
+  const strongCount = result.validatedPains.filter(p => p.momTestScore === 'strong').length;
+  const mediumCount = result.validatedPains.filter(p => p.momTestScore === 'medium').length;
+  const weakCount = result.validatedPains.filter(p => p.momTestScore === 'weak').length;
+  document.getElementById('modal').innerHTML = `
+    <div class="modal-header">
+      <h2>✨ Mom Test extraction · ${escapeHtml(interview.date || '')}</h2>
+      <button class="btn tiny" id="ex-close">Close</button>
+    </div>
+    <div class="modal-body">
+      <p style="color:var(--muted);font-size:13px;margin-top:0">
+        Analyzed via <strong>Mom Test</strong>, <strong>Lean Startup</strong>, and <strong>Traction</strong>.
+        ${strongCount ? `<span class="badge badge-strong" style="margin-left:6px">${strongCount} strong</span>` : ''}
+        ${mediumCount ? `<span class="badge badge-medium" style="margin-left:6px">${mediumCount} medium</span>` : ''}
+        ${weakCount ? `<span class="badge badge-weak" style="margin-left:6px">${weakCount} weak</span>` : ''}
+        ${result.redFlags.length ? `<span class="badge" style="background:#fdecea;color:#c62828;margin-left:6px">${result.redFlags.length} red flag${result.redFlags.length === 1 ? '' : 's'}</span>` : ''}
+      </p>
+      <div class="extract-result"><h4>✅ Validated pain points (${result.validatedPains.length})</h4><p class="section-note">These show specific past behavior, active workarounds, or measurable cost.</p>${validatedHtml}</div>
+      ${result.redFlags.length ? `<div class="extract-result red-flags-panel"><h4>⚠ Red flags — failed Mom Test (${result.redFlags.length})</h4><p class="section-note">Sounded like pains but lack validation. Do NOT treat as real signal.</p>${redFlagsHtml}</div>` : ''}
+      <div class="extract-result quotes-panel"><h4>💬 Verbatim quotes (${result.language.length})</h4><p class="section-note">Word-for-word — raw material for marketing copy and pitch language.</p>${quotesHtml}</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" id="ex-cancel">Cancel</button>
+      <button class="btn" id="ex-append">Append to existing</button>
+      <button class="btn primary" id="ex-replace">Replace existing fields</button>
+    </div>`;
+  document.getElementById('modal-back').classList.add('show');
+  const ppLines = result.validatedPains.map(p => {
+    const tag = p.momTestScore.toUpperCase();
+    const sigs = p.signals?.length ? ' · ' + p.signals.map(s => s.replace(/_/g, ' ')).join(', ') : '';
+    let block = `• [${tag}${sigs}] ${p.pain}`;
+    if (p.evidence) block += `\n    ↳ Evidence: ${p.evidence}`;
+    return block;
+  }).join('\n\n');
+  const lgLines = result.language.map(q => '• "' + q + '"').join('\n');
+  const redFlagsBlock = result.redFlags.length
+    ? '⚠ Red flags (failed Mom Test — do NOT treat as validated customer signal):\n' + result.redFlags.map(rf => `• "${rf.claim}" — ${rf.issue}`).join('\n') : '';
+  const apply = (mode) => {
+    if (mode === 'replace') {
+      interview.painPoints = ppLines; interview.language = lgLines;
+      if (redFlagsBlock) interview.notes = redFlagsBlock + (interview.notes ? '\n\n---\n\n' + interview.notes : '');
+    } else if (mode === 'append') {
+      interview.painPoints = (interview.painPoints || '') + (interview.painPoints && ppLines ? '\n\n' : '') + ppLines;
+      interview.language = (interview.language || '') + (interview.language && lgLines ? '\n' : '') + lgLines;
+      if (redFlagsBlock) interview.notes = (interview.notes || '') + (interview.notes ? '\n\n' : '') + redFlagsBlock;
+    }
+    contact.updatedAt = new Date().toISOString(); save(); renderContactDetail();
+    showToast(mode === 'replace' ? 'Fields replaced with extracted content' : 'Extracted content appended');
+  };
+  document.getElementById('ex-close').addEventListener('click', closeExtractModal);
+  document.getElementById('ex-cancel').addEventListener('click', closeExtractModal);
+  document.getElementById('ex-replace').addEventListener('click', () => apply('replace'));
+  document.getElementById('ex-append').addEventListener('click', () => apply('append'));
+}
+function closeExtractModal() { renderContactDetail(); }
+
+/* ============================================================
+   CONTACT DETAIL MODAL
+   ============================================================ */
+let currentContactId = null;
+let currentDetailTab = 'profile';
+
+function openContactDetail(id) { currentContactId = id; currentDetailTab = 'profile'; renderContactDetail(); document.getElementById('modal-back').classList.add('show'); }
+function closeModal() { document.getElementById('modal-back').classList.remove('show'); document.getElementById('modal').innerHTML = ''; currentContactId = null; }
+document.getElementById('modal-back').addEventListener('click', e => { if (e.target.id === 'modal-back') closeModal(); });
+
+function renderContactDetail() {
+  const c = state.contacts.find(x => x.id === currentContactId);
+  if (!c) { closeModal(); return; }
+  const stageOpts = DEFAULT_STAGES.map(s => `<option value="${s.id}" ${s.id === c.stage ? 'selected' : ''}>${escapeHtml(s.label)}</option>`).join('');
+  document.getElementById('modal').innerHTML = `
+    <div class="modal-header">
+      <h2>${escapeHtml(c.name || '(Unnamed contact)')}</h2>
+      <div style="display:flex;gap:6px;align-items:center">
+        <select id="detail-stage" style="width:auto">${stageOpts}</select>
+        <button class="btn danger tiny" id="detail-delete">Delete</button>
+        <button class="btn tiny" id="detail-close">Close</button>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="contact-actions">
+        <button class="btn primary" id="reaction-interview-btn">🎤 Reaction interview</button>
+        <button class="btn" id="pull-reactions-btn">📥 Pull reactions</button>
+        ${emailChip(c)}${phoneChip(c)}${igChip(c)}
+      </div>
+      <div class="contact-detail-tabs">
+        <button data-t="profile" class="${currentDetailTab === 'profile' ? 'active' : ''}">👤 Profile</button>
+        <button data-t="interviews" class="${currentDetailTab === 'interviews' ? 'active' : ''}">🎙 Interviews (${(c.interviews || []).length})</button>
+        <button data-t="notes" class="${currentDetailTab === 'notes' ? 'active' : ''}">📓 Notes</button>
+      </div>
+      <div id="detail-body"></div>
+    </div>`;
+  document.getElementById('detail-close').addEventListener('click', closeModal);
+  document.getElementById('detail-stage').addEventListener('change', e => { c.stage = e.target.value; c.updatedAt = new Date().toISOString(); save(); if (state.activeView === 'pipeline') renderPipeline(); if (state.activeView === 'list') renderList(); });
+  document.getElementById('detail-delete').addEventListener('click', () => {
+    if (!confirm(`Delete ${c.name || 'this contact'} and all their interviews?`)) return;
+    state.contacts = state.contacts.filter(x => x.id !== c.id); save(); closeModal();
+    if (state.activeView === 'pipeline') renderPipeline(); if (state.activeView === 'list') renderList(); renderFilterBar(); showToast('Contact deleted');
+  });
+  document.getElementById('reaction-interview-btn').addEventListener('click', () => launchReactionInterview(c));
+  document.getElementById('pull-reactions-btn').addEventListener('click', () => pullReactionsFor(c));
+  document.querySelectorAll('.contact-detail-tabs button').forEach(b => b.addEventListener('click', () => { currentDetailTab = b.dataset.t; renderContactDetail(); }));
+  renderDetailBody(c);
+}
+function renderDetailBody(c) {
+  const body = document.getElementById('detail-body');
+  if (currentDetailTab === 'profile') body.innerHTML = profileTabHtml(c);
+  else if (currentDetailTab === 'interviews') body.innerHTML = interviewsTabHtml(c);
+  else if (currentDetailTab === 'notes') body.innerHTML = notesTabHtml(c);
+  wireDetailHandlers(c);
+}
+
+function profileTabHtml(c) {
+  const segOpts = state.segments.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
+  const srcOpts = '<option value="">—</option>' + state.sources.map(s => `<option value="${escapeHtml(s)}" ${c.source === s ? 'selected' : ''}>${escapeHtml(s)}</option>`).join('');
+  const appOpts = '<option value="">—</option>' + state.approachMethods.map(s => `<option value="${escapeHtml(s)}" ${c.approachMethod === s ? 'selected' : ''}>${escapeHtml(s)}</option>`).join('');
+  return `
+    <div class="form-row">
+      <div class="form-field"><label class="field-label">Name</label><input type="text" data-field="name" value="${escapeHtml(c.name)}" /></div>
+      <div class="form-field"><label class="field-label">Company / Business</label><input type="text" data-field="company" value="${escapeHtml(c.company)}" /></div>
+    </div>
+    <div class="form-row">
+      <div class="form-field"><label class="field-label">Role / Title</label><input type="text" data-field="role" value="${escapeHtml(c.role)}" placeholder="e.g. Food Truck Owner, Caterer" /></div>
+      <div class="form-field"><label class="field-label">Segments (ICP tags)</label><div class="multiselect" id="ms-segments">
+        ${(c.segments || []).map((s, i) => `<span class="item">${escapeHtml(s)}<button data-i="${i}">×</button></span>`).join('')}
+        <select id="add-segment-sel"><option value="">+ Add segment…</option>${segOpts}</select>
+      </div></div>
+    </div>
+    <div class="form-row">
+      <div class="form-field"><label class="field-label">Phone</label><div class="input-with-action">
+        <input type="tel" data-field="phone" id="phone-input" value="${escapeHtml(c.phone)}" placeholder="919-555-0148" style="flex:1" />
+        <a class="btn tiny" id="phone-open" href="${c.phone ? 'tel:' + escapeHtml(telHref(c.phone)) : '#'}" title="Call" style="${(c.phone || '').trim() ? '' : 'opacity:0.4;pointer-events:none'}">📞 Call</a>
+      </div></div>
+      <div class="form-field"><label class="field-label">Email</label><div class="input-with-action">
+        <input type="email" data-field="email" id="email-input" value="${escapeHtml(c.email)}" placeholder="name@business.com" style="flex:1" />
+        <a class="btn tiny" id="email-open" href="${(c.email || '').trim() ? 'mailto:' + escapeHtml(c.email.trim()) : '#'}" title="Email" style="${(c.email || '').trim() ? '' : 'opacity:0.4;pointer-events:none'}">✉ Email</a>
+      </div></div>
+    </div>
+    <div class="form-row single">
+      <div class="form-field">
+        <label class="field-label">Instagram handle</label>
+        <div class="input-with-action">
+          <input type="text" data-field="instagram" id="ig-input" value="${escapeHtml(c.instagram)}" placeholder="@handle — or paste their instagram.com/… link" style="flex:1" />
+          <a class="btn tiny" id="ig-open-link" href="${igUrl(c.instagram) || '#'}" target="_blank" rel="noopener" title="Open profile" style="${igHandle(c.instagram) ? '' : 'opacity:0.4;pointer-events:none'}">📷 Open ↗</a>
+        </div>
+        <small style="color:var(--muted);font-size:11px;margin-top:4px">Handle (with or without @) or a full profile URL — links open the account directly.</small>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-field"><label class="field-label">Source channel</label><select data-field="source">${srcOpts}</select></div>
+      <div class="form-field"><label class="field-label">Approach method</label><select data-field="approachMethod">${appOpts}</select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-field"><label class="field-label">Next follow-up</label><input type="date" data-field="nextFollowup" value="${escapeHtml(c.nextFollowup)}" /></div>
+      <div class="form-field"><label class="field-label">Created</label><input type="text" value="${escapeHtml(c.createdAt ? new Date(c.createdAt).toLocaleString() : '')}" disabled style="background:var(--soft);color:var(--muted)" /></div>
+    </div>`;
+}
+
+function interviewsTabHtml(c) {
+  const ivs = c.interviews || [];
+  let html = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:8px;flex-wrap:wrap">
+    <p style="color:var(--muted);font-size:13px;margin:0">Each interview captures pain points, verbatim language, your transcript, and any Reactioner results.</p>
+    <button class="btn primary" id="add-interview-btn">+ New interview</button>
+  </div>`;
+  if (ivs.length === 0) {
+    html += `<div class="empty-state"><div class="big-icon">🎙</div><h3>No interviews yet</h3><p>Click <strong>+ New interview</strong>, or use <strong>🎤 Reaction interview</strong> above to run one in the Reactioner.</p></div>`;
+  } else {
+    const sorted = [...ivs].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+    for (const iv of sorted) {
+      const isRxn = iv.source === 'reactioner';
+      const rs = iv.reactionSummary;
+      let rsHtml = '';
+      if (rs && rs.total) {
+        const verdict = rs.score > 0 ? ['win', 'Resonated'] : rs.score < 0 ? ['lose', 'Did not land'] : ['mixed', 'Mixed'];
+        rsHtml = `<div class="reaction-summary">
+          <span class="big">❤️ ${rs.love}</span><span class="big">👍 ${rs.like}</span><span class="big">👎 ${rs.dislike}</span>
+          <span style="color:var(--muted)">· ${rs.total} reactions · net ${rs.score}</span>
+          <span class="verdict ${verdict[0]}">${verdict[1]}</span>
+        </div>`;
+      }
+      html += `<div class="interview-card${isRxn ? ' reactioner' : ''}" data-iv-id="${iv.id}">
+        <div class="interview-card-head">
+          <h4>Interview · <input type="date" data-iv-field="date" value="${escapeHtml(iv.date)}" style="width:auto;font-size:13px" />${isRxn ? '<span class="iv-badge">🎤 Reactioner</span>' : ''}</h4>
+          <button class="btn tiny danger" data-iv-delete="${iv.id}">Delete</button>
+        </div>
+        ${rsHtml}
+        <div class="interview-fields" style="${rsHtml ? 'margin-top:10px' : ''}">
+          <div class="form-field"><label class="field-label">Pain points they mentioned</label><textarea data-iv-field="painPoints" placeholder="Specific frustrations, things that aren't working, time/money lost…">${escapeHtml(iv.painPoints)}</textarea></div>
+          <div class="form-field"><label class="field-label">Language used (verbatim quotes)</label><textarea data-iv-field="language" placeholder="Their exact words — your future marketing copy">${escapeHtml(iv.language)}</textarea></div>
+          <div class="form-field"><label class="field-label">Next steps / commitments</label><textarea data-iv-field="nextSteps" placeholder="Follow-up, intro, demo, etc.">${escapeHtml(iv.nextSteps)}</textarea></div>
+          <div class="form-field"><label class="field-label">Recording or Fathom URL</label><input type="url" data-iv-field="recordingUrl" value="${escapeHtml(iv.recordingUrl)}" placeholder="https://fathom.video/…" /></div>
+          <div class="form-field">
+            <label class="field-label">Fathom transcript (paste here)</label>
+            <textarea data-iv-field="transcript" class="transcript-area" placeholder="Paste your full Fathom transcript. In Fathom: open the call → Transcript → Copy all → paste here.">${escapeHtml(iv.transcript)}</textarea>
+            <div class="transcript-controls">
+              <button class="extract-btn" data-iv-action="extract" data-iv-id="${iv.id}" ${iv.transcript ? '' : 'disabled'}>✨ Extract pain points &amp; quotes with AI</button>
+              <button class="btn tiny" data-iv-action="copy-transcript" data-iv-id="${iv.id}">📋 Copy</button>
+              <span class="char-count" id="char-count-${iv.id}">${(iv.transcript || '').length.toLocaleString()} chars</span>
+            </div>
+          </div>
+          <div class="form-field"><label class="field-label">Other notes from this conversation</label><textarea data-iv-field="notes" placeholder="Anything else worth remembering">${escapeHtml(iv.notes)}</textarea></div>
+        </div>
+      </div>`;
+    }
+  }
+  return html;
+}
+function notesTabHtml(c) {
+  return `<div class="form-field"><label class="field-label">General notes about this contact</label>
+    <textarea data-field="notes" style="min-height:280px" placeholder="Background, context, relationship history, etc.">${escapeHtml(c.notes)}</textarea></div>`;
+}
+
+function wireDetailHandlers(c) {
+  document.querySelectorAll('[data-field]').forEach(el => {
+    el.addEventListener('input', () => { c[el.dataset.field] = el.value; c.updatedAt = new Date().toISOString(); save(); });
+    el.addEventListener('change', () => { if (state.activeView === 'pipeline') renderPipeline(); if (state.activeView === 'list') renderList(); });
+  });
+  // Live-sync open links for ig / email / phone
+  const syncLink = (inputId, linkId, fn) => {
+    const inp = document.getElementById(inputId); const link = document.getElementById(linkId);
+    if (!inp || !link) return;
+    inp.addEventListener('input', () => {
+      const href = fn(inp.value);
+      if (href) { link.href = href; link.style.opacity = ''; link.style.pointerEvents = ''; }
+      else { link.href = '#'; link.style.opacity = '0.4'; link.style.pointerEvents = 'none'; }
+    });
+  };
+  syncLink('ig-input', 'ig-open-link', v => igUrl(v));
+  syncLink('email-input', 'email-open', v => (v || '').trim() ? 'mailto:' + v.trim() : '');
+  syncLink('phone-input', 'phone-open', v => (v || '').trim() ? 'tel:' + telHref(v) : '');
+
+  const segSel = document.getElementById('add-segment-sel');
+  if (segSel) {
+    segSel.addEventListener('change', () => {
+      const v = segSel.value;
+      if (v && !(c.segments || []).includes(v)) { c.segments = c.segments || []; c.segments.push(v); save(); renderContactDetail(); }
+      segSel.value = '';
+    });
+    document.querySelectorAll('#ms-segments .item button').forEach(b => b.addEventListener('click', () => { const idx = parseInt(b.dataset.i, 10); c.segments.splice(idx, 1); save(); renderContactDetail(); }));
+  }
+
+  const addBtn = document.getElementById('add-interview-btn');
+  if (addBtn) addBtn.addEventListener('click', () => { c.interviews = c.interviews || []; c.interviews.unshift(defaultInterview()); save(); renderContactDetail(); });
+
+  document.querySelectorAll('[data-iv-field]').forEach(el => {
+    const card = el.closest('.interview-card'); const ivId = card?.dataset.ivId;
+    const iv = (c.interviews || []).find(x => x.id === ivId); if (!iv) return;
+    el.addEventListener('input', () => {
+      iv[el.dataset.ivField] = el.value; c.updatedAt = new Date().toISOString(); save();
+      if (el.dataset.ivField === 'transcript') { const cc = document.getElementById('char-count-' + ivId); if (cc) cc.textContent = el.value.length.toLocaleString() + ' chars'; }
+    });
+  });
+  document.querySelectorAll('[data-iv-delete]').forEach(b => b.addEventListener('click', () => {
+    if (!confirm('Delete this interview record?')) return;
+    const ivId = b.dataset.ivDelete; c.interviews = c.interviews.filter(x => x.id !== ivId); save(); renderContactDetail();
+  }));
+  document.querySelectorAll('[data-iv-action="copy-transcript"]').forEach(b => b.addEventListener('click', async () => {
+    const iv = c.interviews.find(x => x.id === b.dataset.ivId); if (!iv) return;
+    if (!iv.transcript) { showToast('Nothing to copy'); return; }
+    try { await navigator.clipboard.writeText(iv.transcript); showToast('Copied to clipboard'); } catch { showToast('Copy failed'); }
+  }));
+  document.querySelectorAll('[data-iv-action="extract"]').forEach(b => b.addEventListener('click', async () => {
+    const iv = c.interviews.find(x => x.id === b.dataset.ivId);
+    if (!iv || !iv.transcript || !iv.transcript.trim()) { showToast('Paste a transcript first'); return; }
+    if (!state.aiSettings?.apiKey) { if (confirm('AI extraction needs an Anthropic API key. Open Settings now?')) { closeModal(); setView('settings'); } return; }
+    const orig = b.innerHTML; b.disabled = true; b.innerHTML = '<span class="spinner"></span> Extracting with Claude…';
+    try { const result = await extractFromTranscript(iv.transcript); showExtractionResult(result, c, iv); }
+    catch (err) { alert('Extraction failed: ' + err.message); b.disabled = false; b.innerHTML = orig; }
+  }));
+  document.querySelectorAll('[data-iv-field="transcript"]').forEach(ta => ta.addEventListener('input', () => {
+    const card = ta.closest('.interview-card'); const extractBtn = card?.querySelector('[data-iv-action="extract"]');
+    if (extractBtn) extractBtn.disabled = !ta.value.trim();
+  }));
+}
+
+/* ============================================================
+   REACTIONER COHESION
+   ============================================================ */
+function reactionerBase() {
+  const u = ((state.integration && state.integration.reactionerUrl) || '').trim();
+  if (!u) return '';
+  return u.replace(/[?#].*$/, '').replace(/\/+$/, '');
+}
+function launchReactionInterview(c) {
+  const base = reactionerBase();
+  if (!base) { if (confirm('Set your Reactioner URL first (Settings → Reactioner integration). Open Settings now?')) { closeModal(); setView('settings'); } return; }
+  const name = (c.name || '').trim() || (c.company || '').trim() || 'Contact';
+  const url = base + '?crmName=' + encodeURIComponent(name) + '&crmInterview=1';
+  window.open(url, '_blank', 'noopener');
+  // Note that an interview has been initiated.
+  if (c.stage === 'not-contacted' || c.stage === 'contacted') { c.stage = 'scheduled'; }
+  c.updatedAt = new Date().toISOString(); save();
+  showToast('Opening Reactioner for ' + name + ' — react there, then Pull reactions back here');
+}
+function openReactionerHome() {
+  const base = reactionerBase();
+  if (!base) { if (confirm('Set your Reactioner URL first (Settings → Reactioner integration). Open Settings now?')) { setView('settings'); } return; }
+  window.open(base, '_blank', 'noopener');
+}
+function summarizeReactionerForName(data, name) {
+  const target = name.trim().toLowerCase();
+  const scoreMap = (data && data.scoreMap) || { love: 3, like: 1, dislike: -1 };
+  let love = 0, like = 0, dislike = 0, total = 0, score = 0;
+  const cyclesSeen = [];
+  (data.cycles || []).forEach(cy => {
+    const matched = (cy.participants || []).filter(p => (p.name || '').trim().toLowerCase() === target);
+    if (!matched.length) return;
+    let cycleCount = 0;
+    matched.forEach(p => {
+      Object.keys(cy.reactions || {}).forEach(k => {
+        if (k.split('|')[0] !== p.id) return;
+        const r = cy.reactions[k]; if (!r || !r.reaction) return;
+        total++; cycleCount++;
+        if (r.reaction === 'love') love++; else if (r.reaction === 'like') like++; else if (r.reaction === 'dislike') dislike++;
+        score += (scoreMap[r.reaction] || 0);
+      });
+    });
+    if (cycleCount > 0) cyclesSeen.push(cy.name || 'Cycle');
+  });
+  return { love, like, dislike, total, score, cycles: cyclesSeen };
+}
+async function pullReactionsFor(c) {
+  if (!sb || !currentUserId) { alert('Pull reactions reads your Reactioner data from the same account, so you need to be signed in (cloud sync). Sign in and try again.'); return; }
+  const name = (c.name || '').trim();
+  if (!name) { alert('Add a name to this contact first — reactions are matched by participant name in the Reactioner.'); return; }
+  showToast('Reading your Reactioner data…');
+  let row;
+  try { row = await cloudLoadReactioner(currentUserId); }
+  catch (e) { alert('Could not read Reactioner data: ' + (e.message || e)); return; }
+  if (!row || !row.data || !Array.isArray(row.data.cycles)) { alert('No Reactioner data found in this account yet. Run an interview in the Reactioner first.'); return; }
+  const summary = summarizeReactionerForName(row.data, name);
+  if (!summary || summary.total === 0) {
+    alert('No reactions found for a participant named "' + name + '" in your Reactioner.\n\nTip: use the 🎤 Reaction interview button — it pre-fills the participant name so the match works automatically.');
+    return;
+  }
+  const today = new Date().toISOString().slice(0, 10);
+  c.interviews = c.interviews || [];
+  let iv = c.interviews.find(x => x.source === 'reactioner' && x.date === today);
+  if (!iv) { iv = defaultInterview(); iv.date = today; iv.source = 'reactioner'; c.interviews.unshift(iv); }
+  iv.reactionSummary = summary;
+  const verdict = summary.score > 0 ? 'Resonated' : summary.score < 0 ? 'Did not land' : 'Mixed';
+  const block = 'Reactioner results (' + (summary.cycles.join(', ') || 'cycle') + '): ❤️ ' + summary.love + '  👍 ' + summary.like + '  👎 ' + summary.dislike
+    + '  ·  ' + summary.total + ' reactions  ·  net score ' + summary.score + ' (' + verdict + ')';
+  iv.notes = block + (iv.notes && iv.notes.indexOf('Reactioner results') === -1 ? '\n\n' + iv.notes : '');
+  if (['not-contacted', 'contacted', 'scheduled'].includes(c.stage)) c.stage = 'talked-to';
+  c.updatedAt = new Date().toISOString();
+  save();
+  currentDetailTab = 'interviews';
+  renderContactDetail();
+  if (state.activeView === 'pipeline') renderPipeline(); if (state.activeView === 'list') renderList();
+  showToast('Pulled ' + summary.total + ' reactions — interview logged, marked Talked to');
+}
+
+/* ============================================================
+   QUICK ADD
+   ============================================================ */
+function parseQuickAdd(text) {
+  const c = defaultContact();
+  let s = ' ' + text + ' ';
+  const em = s.match(/[^\s@]+@[^\s@]+\.[^\s@]+/);
+  if (em) { c.email = em[0]; s = s.replace(em[0], ' '); }
+  const ig = s.match(/(?:https?:\/\/)?(?:www\.)?instagram\.com\/[A-Za-z0-9_.]+|@[A-Za-z0-9_.]{2,}/);
+  if (ig) { c.instagram = igHandle(ig[0]); s = s.replace(ig[0], ' '); }
+  const ph = s.match(/\+?\d[\d().\-\s]{6,}\d/);
+  if (ph) { c.phone = ph[0].trim(); s = s.replace(ph[0], ' '); }
+  c.name = s.replace(/\s+/g, ' ').trim();
+  return c;
+}
+function quickAdd() {
+  const inp = document.getElementById('quick-add-input');
+  const text = inp.value.trim();
+  const c = text ? parseQuickAdd(text) : defaultContact();
+  state.contacts.push(c); save();
+  inp.value = '';
+  if (state.activeView === 'pipeline') renderPipeline(); if (state.activeView === 'list') renderList();
+  renderFilterBar();
+  openContactDetail(c.id);
+  showToast('Contact added — fill in the rest');
+}
+
+/* ============================================================
+   AI IMPORT — preserved (paste a researched list; parse direct or via Claude)
+   ============================================================ */
+function openAiImportModal() {
+  document.getElementById('modal').innerHTML = `
+    <div class="modal-header">
+      <h2>✨ Import a list</h2>
+      <button class="btn tiny" id="ai-close">Close</button>
+    </div>
+    <div class="modal-body">
+      <p style="color:var(--muted);font-size:13.5px;line-height:1.55">
+        Paste anything — a Claude-researched list, a markdown table, plain notes, JSON, or CSV — and it becomes CRM contacts to review and bulk import. ICP segments are matched automatically.
+      </p>
+      <p style="color:var(--muted);font-size:12.5px;line-height:1.5;background:var(--accent-soft);padding:10px 12px;border-radius:9px;border-left:3px solid var(--accent)">
+        💡 <strong>Best results:</strong> ask Claude (here in Cowork) to research a real list — “Find 20 BBQ food-truck operators in the Raleigh-Durham area with public Instagram accounts; give name, business, a one-line description, and IG handle.” Drop the JSON/CSV it produces here, or onto the window.
+      </p>
+      <label class="field-label" style="margin-top:14px">Paste your list / research / text</label>
+      <textarea id="ai-import-text" style="min-height:260px;font-size:13px" placeholder="Paste here — bullets, a markdown table, JSON array, or CSV."></textarea>
+      <div style="margin-top:8px;font-size:12px;color:var(--muted)"><span id="ai-import-char-count">0 chars</span></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" id="ai-cancel">Cancel</button>
+      <button class="btn" id="ai-direct-parse" title="Parse as JSON or CSV — no API needed">Parse JSON/CSV</button>
+      <button class="btn primary" id="ai-parse-btn">✨ Parse with Claude →</button>
+    </div>`;
+  document.getElementById('modal-back').classList.add('show');
+  const ta = document.getElementById('ai-import-text');
+  const cc = document.getElementById('ai-import-char-count');
+  ta.addEventListener('input', () => { cc.textContent = ta.value.length.toLocaleString() + ' chars'; });
+  document.getElementById('ai-close').addEventListener('click', closeModal);
+  document.getElementById('ai-cancel').addEventListener('click', closeModal);
+  document.getElementById('ai-direct-parse').addEventListener('click', () => {
+    const text = ta.value.trim(); if (!text) { showToast('Paste something first'); return; }
+    const contacts = parseContactsDirectly(text);
+    if (!contacts || contacts.length === 0) { alert('Couldn\'t auto-parse this as JSON or CSV. Try "✨ Parse with Claude" instead.'); return; }
+    showAiImportPreview(contacts, text);
+  });
+  document.getElementById('ai-parse-btn').addEventListener('click', async () => {
+    const text = ta.value.trim(); if (!text) { showToast('Paste something first'); return; }
+    if (!state.aiSettings?.apiKey) { if (confirm('AI parsing needs an Anthropic API key. Open Settings now?')) { closeModal(); setView('settings'); } return; }
+    const btn = document.getElementById('ai-parse-btn'); const orig = btn.innerHTML; btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Parsing with Claude…';
+    try { const contacts = await parseContactsWithAI(text); showAiImportPreview(contacts, text); }
+    catch (err) { alert('Parsing failed: ' + err.message); btn.disabled = false; btn.innerHTML = orig; }
+  });
+}
+async function parseContactsWithAI(text) {
+  const apiKey = state.aiSettings.apiKey;
+  const model = state.aiSettings.model || 'claude-haiku-4-5-20251001';
+  const prompt = `You are converting unstructured research notes about potential customer contacts into structured CRM data for a customer discovery process.
+
+Available fields per contact:
+- name (person's name)
+- company (business / trade name)
+- role (e.g. "Food Truck Owner", "Caterer", "Owner & Chef", "Operations Manager")
+- phone, email (only if explicitly given)
+- instagram (their Instagram handle if mentioned — return just the handle like "queabbq", no "@" and no URL; empty string if not given)
+- segments: pick one or more from this exact list: ${state.segments.map(s => '"' + s + '"').join(', ')}
+- source: pick ONE from this exact list (or empty string if not applicable): ${state.sources.map(s => '"' + s + '"').join(', ')}
+- notes: anything else useful — location, cuisine specialty, social handles, why they're a fit, headcount, association membership, recent press, etc.
+
+Rules:
+- ONE entry per distinct person/business
+- DO NOT invent data — if a field isn't in the input, return empty string or empty array
+- Always populate notes if there's any contextual info
+- Don't set stage or approach method
+- Match segment / source values EXACTLY from the lists above (case-sensitive)
+
+Return ONLY valid JSON in this exact format, no other text:
+{
+  "contacts": [
+    { "name": "...", "company": "...", "role": "...", "phone": "", "email": "", "instagram": "", "segments": ["..."], "source": "", "notes": "..." }
+  ]
+}
+
+Input to parse:
+"""
+${text}
+"""`;
+  const responseText = await callClaude(apiKey, model, prompt, 8192);
+  let jsonText = responseText.trim();
+  const codeBlockMatch = jsonText.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+  if (codeBlockMatch) jsonText = codeBlockMatch[1];
+  const braceMatch = jsonText.match(/\{[\s\S]*\}/);
+  if (braceMatch) jsonText = braceMatch[0];
+  let parsed;
+  try { parsed = JSON.parse(jsonText); } catch (e) { throw new Error('Claude returned a response I couldn\'t parse. Raw: ' + responseText.slice(0, 300)); }
+  if (!Array.isArray(parsed.contacts)) throw new Error('Response missing "contacts" array');
+  return parsed.contacts.map(normalizeImportedContact);
+}
+function normalizeImportedContact(raw) {
+  return {
+    name: String(raw.name || '').trim(), company: String(raw.company || '').trim(), role: String(raw.role || '').trim(),
+    phone: String(raw.phone || '').trim(), email: String(raw.email || '').trim(),
+    instagram: igHandle(raw.instagram || raw.ig || raw.instagramHandle || raw.insta || ''),
+    segments: Array.isArray(raw.segments) ? raw.segments.map(s => String(s).trim()).filter(Boolean) : (raw.segments ? String(raw.segments).split(/[;,]/).map(s => s.trim()).filter(Boolean) : []),
+    source: String(raw.source || '').trim(), notes: String(raw.notes || '').trim()
+  };
+}
+function parseContactsDirectly(text) {
+  text = text.trim();
+  if (text.startsWith('{') || text.startsWith('[')) {
+    try { const parsed = JSON.parse(text); const arr = Array.isArray(parsed) ? parsed : (Array.isArray(parsed.contacts) ? parsed.contacts : null); if (arr) return arr.map(normalizeImportedContact); } catch (e) {}
+  }
+  if (text.includes(',') && text.includes('\n')) {
+    try {
+      const rows = parseCsv(text).filter(r => r.some(v => v && v.trim()));
+      if (rows.length >= 2) {
+        const headers = rows[0].map(h => h.trim().toLowerCase());
+        const idxOf = (...names) => { for (const n of names) { const i = headers.findIndex(h => h.includes(n)); if (i !== -1) return i; } return -1; };
+        const iName = idxOf('name'), iCo = idxOf('company', 'business'), iRole = idxOf('role', 'title'),
+          iPhone = idxOf('phone'), iEmail = idxOf('email'), iIg = idxOf('instagram', 'insta'),
+          iSeg = idxOf('segment', 'category', 'type', 'icp'), iSource = idxOf('source', 'channel'), iNotes = idxOf('note', 'description', 'context');
+        const get = (r, i) => i >= 0 && i < r.length ? (r[i] || '').trim() : '';
+        const contacts = [];
+        for (let i = 1; i < rows.length; i++) {
+          const r = rows[i]; if (!get(r, iName) && !get(r, iCo)) continue;
+          contacts.push(normalizeImportedContact({
+            name: get(r, iName), company: get(r, iCo), role: get(r, iRole), phone: get(r, iPhone), email: get(r, iEmail), instagram: get(r, iIg),
+            segments: get(r, iSeg) ? get(r, iSeg).split(/[;,]/).map(s => s.trim()).filter(Boolean) : [], source: get(r, iSource), notes: get(r, iNotes)
+          }));
+        }
+        return contacts;
+      }
+    } catch (e) {}
+  }
+  return null;
+}
+function showAiImportPreview(contacts, originalText) {
+  if (!contacts || contacts.length === 0) { alert('No contacts were parsed from the input.'); return; }
+  window._aiImportContacts = contacts; window._aiImportText = originalText; renderAiImportPreview();
+}
+function renderAiImportPreview() {
+  const contacts = window._aiImportContacts || [];
+  const rows = contacts.map((c, i) => `
+    <tr data-i="${i}">
+      <td style="width:30px"><input type="checkbox" data-include="${i}" checked /></td>
+      <td><strong>${escapeHtml(c.name) || '<em style="color:var(--muted)">(no name)</em>'}</strong></td>
+      <td>${escapeHtml(c.company)}</td>
+      <td>${escapeHtml(c.role)}</td>
+      <td>${igHandle(c.instagram) ? '@' + escapeHtml(igHandle(c.instagram)) : ''}</td>
+      <td>${escapeHtml((c.segments || []).join(', '))}</td>
+      <td>${escapeHtml(c.source)}</td>
+      <td style="max-width:280px;font-size:12px;color:var(--muted)">${escapeHtml((c.notes || '').slice(0, 140))}${(c.notes || '').length > 140 ? '…' : ''}</td>
+    </tr>`).join('');
+  document.getElementById('modal').innerHTML = `
+    <div class="modal-header"><h2>✨ Review parsed contacts (${contacts.length})</h2><button class="btn tiny" id="ai-close">Close</button></div>
+    <div class="modal-body">
+      <p style="color:var(--muted);font-size:13px">Pulled <strong>${contacts.length}</strong> contact${contacts.length === 1 ? '' : 's'}. Uncheck any you don't want, then Import. All start in <em>Not contacted</em>.</p>
+      <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
+        <button class="btn tiny" id="ai-select-all">Select all</button>
+        <button class="btn tiny" id="ai-deselect-all">Deselect all</button>
+        <button class="btn tiny" id="ai-back-edit">← Back to edit</button>
+        <span style="margin-left:auto;font-size:13px;color:var(--muted)"><span id="ai-selected-count">${contacts.length}</span> selected</span>
+      </div>
+      <div class="list-table-wrap" style="max-height:400px;overflow:auto">
+        <table class="list"><thead><tr><th></th><th>Name</th><th>Company</th><th>Role</th><th>Instagram</th><th>Segments</th><th>Source</th><th>Notes</th></tr></thead><tbody>${rows}</tbody></table>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn" id="ai-cancel">Cancel</button><button class="btn primary" id="ai-do-import">Import selected →</button></div>`;
+  const updateCount = () => { document.getElementById('ai-selected-count').textContent = document.querySelectorAll('[data-include]:checked').length; };
+  document.querySelectorAll('[data-include]').forEach(cb => cb.addEventListener('change', updateCount));
+  document.getElementById('ai-select-all').addEventListener('click', () => { document.querySelectorAll('[data-include]').forEach(cb => cb.checked = true); updateCount(); });
+  document.getElementById('ai-deselect-all').addEventListener('click', () => { document.querySelectorAll('[data-include]').forEach(cb => cb.checked = false); updateCount(); });
+  document.getElementById('ai-back-edit').addEventListener('click', () => { openAiImportModal(); setTimeout(() => { const ta = document.getElementById('ai-import-text'); if (ta) ta.value = window._aiImportText || ''; }, 50); });
+  document.getElementById('ai-close').addEventListener('click', closeModal);
+  document.getElementById('ai-cancel').addEventListener('click', closeModal);
+  document.getElementById('ai-do-import').addEventListener('click', () => {
+    const selected = [];
+    document.querySelectorAll('[data-include]:checked').forEach(cb => { const i = parseInt(cb.dataset.include, 10); if (contacts[i]) selected.push(contacts[i]); });
+    if (selected.length === 0) { showToast('Pick at least one contact'); return; }
+    let added = 0;
+    for (const sc of selected) { const c = defaultContact(); Object.assign(c, sc); c.stage = 'not-contacted'; state.contacts.push(c); added++; }
+    save(); closeModal(); setView('pipeline'); showToast(`Imported ${added} contact${added === 1 ? '' : 's'}`);
+  });
+}
+
+/* ============================================================
+   IMPORT / EXPORT — preserved
+   ============================================================ */
+function exportJson() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob); const a = document.createElement('a');
+  a.href = url; a.download = `crm-backup-${new Date().toISOString().slice(0, 10)}.json`;
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); showToast('Backup downloaded');
+}
+function importJson(txt) {
+  try {
+    const data = JSON.parse(txt);
+    if (!Array.isArray(data.contacts)) throw new Error('Not a valid backup file');
+    if (!confirm(`Replace ALL data with this backup (${data.contacts.length} contacts)?`)) return;
+    state = migrate(data); save(); setView('pipeline'); showToast(`Imported ${data.contacts.length} contacts`);
+  } catch (e) { alert('Could not import: ' + e.message); }
+}
+function exportCsv() {
+  const headers = ['Name', 'Company', 'Role', 'Phone', 'Email', 'Instagram', 'Segments', 'Stage', 'Source', 'Approach Method', 'Next Follow-up', 'Last Interview Date', 'Interview Count', 'Pain Points (latest)', 'Verbatim Language (latest)', 'Next Steps (latest)', 'Recording URL (latest)', 'General Notes'];
+  const rows = [headers];
+  for (const c of state.contacts) {
+    const interviews = (c.interviews || []).slice().sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+    const latest = interviews[0] || {};
+    rows.push([
+      c.name || '', c.company || '', c.role || '', c.phone || '', c.email || '',
+      igHandle(c.instagram) ? '@' + igHandle(c.instagram) : '', (c.segments || []).join('; '), getStage(c.stage).label,
+      c.source || '', c.approachMethod || '', c.nextFollowup || '', latest.date || '', interviews.length,
+      latest.painPoints || '', latest.language || '', latest.nextSteps || '', latest.recordingUrl || '', c.notes || ''
+    ]);
+  }
+  const csv = rows.map(r => r.map(csvEscape).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' }); const url = URL.createObjectURL(blob); const a = document.createElement('a');
+  a.href = url; a.download = `crm-contacts-${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); showToast('CSV downloaded');
+}
+function csvEscape(v) { if (v === null || v === undefined) return ''; const s = String(v); if (s.includes(',') || s.includes('"') || s.includes('\n')) return '"' + s.replace(/"/g, '""') + '"'; return s; }
+function parseCsv(text) {
+  const rows = []; let row = [], field = '', inQ = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i], next = text[i + 1];
+    if (inQ) { if (ch === '"' && next === '"') { field += '"'; i++; } else if (ch === '"') inQ = false; else field += ch; }
+    else { if (ch === '"') inQ = true; else if (ch === ',') { row.push(field); field = ''; } else if (ch === '\n') { row.push(field); rows.push(row); row = []; field = ''; } else if (ch === '\r') {} else field += ch; }
+  }
+  if (field !== '' || row.length) { row.push(field); rows.push(row); }
+  return rows;
+}
+function importCsv(txt) {
+  const rows = parseCsv(txt).filter(r => r.some(v => v && v.trim()));
+  if (rows.length < 2) { alert('CSV looks empty'); return; }
+  const headers = rows[0].map(h => h.trim().toLowerCase());
+  const idx = (...names) => { for (const n of names) { const i = headers.findIndex(h => h.includes(n)); if (i !== -1) return i; } return -1; };
+  const iName = idx('name'), iCompany = idx('company', 'business'), iRole = idx('role', 'title'), iPhone = idx('phone'), iEmail = idx('email'),
+    iInstagram = idx('instagram', 'insta'), iSource = idx('source'), iApproach = idx('approach', 'method'), iStage = idx('stage', 'status'),
+    iPain = idx('pain', 'point'), iLang = idx('language', 'verbatim', 'quote'), iNext = idx('next step', 'follow', 'action'),
+    iRecording = idx('recording', 'link', 'transcript'), iSegment = idx('segment', 'icp', 'audience'), iNotes = idx('note', 'description');
+  const stageMap = { 'not contacted': 'not-contacted', 'contacted': 'contacted', 'scheduled a call': 'scheduled', 'scheduled': 'scheduled', 'talked to': 'talked-to', 'unsuitable candidate': 'unsuitable', 'unsuitable': 'unsuitable', 'cancelled': 'cancelled', 'canceled': 'cancelled' };
+  const newContacts = [];
+  for (let i = 1; i < rows.length; i++) {
+    const r = rows[i]; const get = (j) => j >= 0 && j < r.length ? (r[j] || '').trim() : '';
+    const name = get(iName), company = get(iCompany); if (!name && !company) continue;
+    const c = defaultContact();
+    c.name = name; c.company = company; c.role = get(iRole); c.phone = get(iPhone); c.email = get(iEmail);
+    c.instagram = igHandle(get(iInstagram)); c.source = get(iSource); c.approachMethod = get(iApproach);
+    c.stage = stageMap[get(iStage).toLowerCase()] || 'not-contacted';
+    const segRaw = get(iSegment); if (segRaw) c.segments = segRaw.split(/[;,]/).map(s => s.trim()).filter(Boolean);
+    if (iNotes >= 0) c.notes = get(iNotes);
+    const pain = get(iPain), lang = get(iLang), next = get(iNext), rec = get(iRecording);
+    if (pain || lang || next || rec) { const iv = defaultInterview(); iv.painPoints = pain; iv.language = lang; iv.nextSteps = next; iv.recordingUrl = rec; c.interviews.push(iv); }
+    newContacts.push(c);
+  }
+  if (newContacts.length === 0) { alert('Could not parse any rows. Check for a Name or Company column.'); return; }
+  if (!confirm(`Import ${newContacts.length} contacts? (Existing contacts are kept)`)) return;
+  state.contacts = state.contacts.concat(newContacts); save(); setView('pipeline'); showToast(`Imported ${newContacts.length} contacts`);
+}
+
+/* ============================================================
+   DRAG-AND-DROP FILE IMPORT
+   ============================================================ */
+let dragDepth = 0;
+function showDropOverlay(on) { document.getElementById('drop-overlay').classList.toggle('show', on); }
+function hasFiles(e) { return e.dataTransfer && Array.from(e.dataTransfer.types || []).indexOf('Files') !== -1; }
+window.addEventListener('dragenter', e => { if (!hasFiles(e)) return; e.preventDefault(); dragDepth++; showDropOverlay(true); });
+window.addEventListener('dragover', e => { if (hasFiles(e)) { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; } });
+window.addEventListener('dragleave', e => { if (!hasFiles(e)) return; dragDepth = Math.max(0, dragDepth - 1); if (dragDepth === 0) showDropOverlay(false); });
+window.addEventListener('drop', async e => {
+  if (!hasFiles(e)) return;
+  e.preventDefault(); dragDepth = 0; showDropOverlay(false);
+  const file = e.dataTransfer.files[0]; if (!file) return;
+  const name = (file.name || '').toLowerCase();
+  const txt = await file.text();
+  if (name.endsWith('.json')) {
+    try {
+      const data = JSON.parse(txt);
+      if (data && Array.isArray(data.contacts) && data.contacts.length && data.contacts[0] && data.contacts[0].id) { importJson(txt); return; }
+    } catch (e) {}
+    const contacts = parseContactsDirectly(txt);
+    if (contacts && contacts.length) { showAiImportPreview(contacts, txt); } else { importJson(txt); }
+  } else if (name.endsWith('.csv')) {
+    const contacts = parseContactsDirectly(txt);
+    if (contacts && contacts.length) showAiImportPreview(contacts, txt); else importCsv(txt);
+  } else { showToast('Drop a .csv or .json file'); }
+});
+
+/* ============================================================
+   PDF EXPORT — preserved
+   ============================================================ */
+function pdfStageIndex(id) { const i = DEFAULT_STAGES.findIndex(s => s.id === id); return i < 0 ? 99 : i; }
+function pdfKV(label, valueHtml) { const v = (valueHtml && String(valueHtml).trim()) ? valueHtml : '<span class="pdf-muted">—</span>'; return `<div class="pdf-kv"><span class="k">${escapeHtml(label)}</span><span class="v">${v}</span></div>`; }
+function pdfParsePains(text) {
+  if (!text) return []; const pains = [];
+  String(text).split('\n').forEach(raw => {
+    const line = raw.trim(); if (!line.startsWith('•')) return;
+    let rest = line.replace(/^•\s*/, ''); let score = '';
+    const m = rest.match(/^\[([^\]]+)\]\s*(.*)$/);
+    if (m) { score = (m[1].split(/[·,]/)[0] || '').trim().toLowerCase(); rest = m[2]; }
+    if (rest.trim()) pains.push({ score, text: rest.trim() });
+  });
+  return pains;
+}
+function pdfParseQuotes(text) { if (!text) return []; return String(text).split('\n').map(l => l.trim()).filter(l => l.startsWith('•')).map(l => l.replace(/^•\s*/, '').trim()).filter(Boolean); }
+function pdfCountRedFlags(notes) { if (!notes || !/red flag/i.test(String(notes))) return 0; return (String(notes).match(/^\s*•/gm) || []).length; }
+function pdfInterviewSummary(iv) {
+  const pains = pdfParsePains(iv.painPoints); const quotes = pdfParseQuotes(iv.language); const redFlags = pdfCountRedFlags(iv.notes);
+  const counts = { strong: 0, medium: 0, weak: 0 }; pains.forEach(p => { if (counts[p.score] !== undefined) counts[p.score]++; });
+  const scoreBits = []; if (counts.strong) scoreBits.push(counts.strong + ' strong'); if (counts.medium) scoreBits.push(counts.medium + ' medium'); if (counts.weak) scoreBits.push(counts.weak + ' weak');
+  let painHtml;
+  if (pains.length) painHtml = pains.map(p => { const badge = ['strong', 'medium', 'weak'].includes(p.score) ? `<span class="pdf-score ${p.score}">${p.score}</span>` : ''; return `<div class="pdf-pain">${badge}<span class="txt">${escapeHtml(p.text)}</span></div>`; }).join('');
+  else if (iv.painPoints && iv.painPoints.trim()) painHtml = `<div class="pdf-pain"><span class="txt">${escapeHtml(iv.painPoints.trim())}</span></div>`;
+  else painHtml = '<div class="pdf-muted" style="font-size:9.5pt">No pain points recorded.</div>';
+  const topQuotes = quotes.slice(0, 3); let quoteHtml = '';
+  if (topQuotes.length) { quoteHtml = '<div class="pdf-iv-mini-label">Representative quotes</div>' + topQuotes.map(q => `<div class="pdf-quote">${escapeHtml(q)}</div>`).join(''); if (quotes.length > 3) quoteHtml += `<div class="pdf-iv-sub">+ ${quotes.length - 3} more verbatim quote${quotes.length - 3 === 1 ? '' : 's'} recorded.</div>`; }
+  const nextSteps = (iv.nextSteps && iv.nextSteps.trim()) ? `<div class="pdf-iv-mini-label">Next steps</div><div style="font-size:9.5pt">${escapeHtml(iv.nextSteps.trim())}</div>` : '';
+  const onFile = [];
+  if (iv.transcript && iv.transcript.trim()) onFile.push(`full transcript (${iv.transcript.length.toLocaleString()} characters)`);
+  if (redFlags) onFile.push(`${redFlags} Mom Test red flag${redFlags === 1 ? '' : 's'}`);
+  if (iv.recordingUrl && iv.recordingUrl.trim()) onFile.push('recording link');
+  if (iv.reactionSummary && iv.reactionSummary.total) onFile.push(`Reactioner result (❤️${iv.reactionSummary.love}/👍${iv.reactionSummary.like}/👎${iv.reactionSummary.dislike})`);
+  const onFileHtml = onFile.length ? `<div class="pdf-iv-sub">Also retained in the CRM: ${onFile.join(', ')}.</div>` : '';
+  const headMeta = pains.length ? `<span class="meta">  —  ${pains.length} validated pain point${pains.length === 1 ? '' : 's'}${scoreBits.length ? ' (' + scoreBits.join(', ') + ')' : ''}</span>` : '';
+  return `<div class="pdf-interview"><div class="pdf-iv-date">Interview · ${escapeHtml(iv.date || 'undated')}${headMeta}</div><div class="pdf-iv-mini-label" style="margin-top:0">Validated pain points</div>${painHtml}${quoteHtml}${nextSteps}${onFileHtml}</div>`;
+}
+function pdfSnapshot(contacts) {
+  return DEFAULT_STAGES.map(s => {
+    const inStage = contacts.filter(c => c.stage === s.id).sort((a, b) => (a.name || '').toLowerCase().localeCompare((b.name || '').toLowerCase()));
+    const items = inStage.length ? inStage.map(c => {
+      const ivc = (c.interviews || []).length; const co = c.company ? ` <span class="co">— ${escapeHtml(c.company)}</span>` : '';
+      if (ivc) return `<div class="pdf-snap-item iv">${escapeHtml(c.name || '(Unnamed)')}${co} <span class="tag">[${ivc} interview${ivc === 1 ? '' : 's'}]</span></div>`;
+      return `<div class="pdf-snap-item">${escapeHtml(c.name || '(Unnamed)')}${co}</div>`;
+    }).join('') : '<div class="pdf-empty-stage">No contacts in this stage.</div>';
+    return `<div class="pdf-stage-band"><div class="pdf-stage-head" style="background:${s.color}"><span class="pdf-stage-dot" style="background:rgba(255,255,255,0.92)"></span>${escapeHtml(s.label)}<span class="ct">${inStage.length}</span></div><div class="pdf-stage-body">${items}</div></div>`;
+  }).join('');
+}
+function pdfProfile(c, idx) {
+  const st = getStage(c.stage); const interviews = (c.interviews || []).slice().sort((a, b) => (a.date || '').localeCompare(b.date || '')); const hasIv = interviews.length > 0;
+  const igh = igHandle(c.instagram); const igVal = igh ? `<a href="${igUrl(c.instagram)}">@${escapeHtml(igh)}</a>` : '';
+  const emailVal = c.email ? `<a href="mailto:${escapeHtml(c.email)}">${escapeHtml(c.email)}</a>` : '';
+  const created = c.createdAt ? new Date(c.createdAt).toLocaleDateString() : '';
+  const stagePill = `<span class="pdf-stage-pill" style="background:${st.color}">${escapeHtml(st.label)}</span>`;
+  const headRight = hasIv ? `<div class="pdf-head-right">${stagePill}<span class="pdf-iv-badge">${interviews.length} interview${interviews.length === 1 ? '' : 's'}</span></div>` : stagePill;
+  const ivSection = hasIv ? `<div class="pdf-iv-section"><div class="pdf-block-label">Interview summary</div>${interviews.map(pdfInterviewSummary).join('')}</div>` : '';
+  return `<div class="pdf-profile${hasIv ? ' interviewed' : ''}">
+    <div class="pdf-profile-head"><div><div class="pdf-profile-name">${idx}. ${escapeHtml(c.name || '(Unnamed contact)')}</div><div class="pdf-profile-sub">${escapeHtml([c.company, c.role].filter(Boolean).join('  ·  ') || 'No company or role recorded')}</div></div>${headRight}</div>
+    <div class="pdf-field-grid">${pdfKV('Phone', escapeHtml(c.phone || ''))}${pdfKV('Email', emailVal)}${pdfKV('Instagram', igVal)}${pdfKV('Source', escapeHtml(c.source || ''))}${pdfKV('Approach', escapeHtml(c.approachMethod || ''))}${pdfKV('Segments', escapeHtml((c.segments || []).join(', ')))}${pdfKV('Follow-up', escapeHtml(c.nextFollowup || ''))}${pdfKV('Added', escapeHtml(created))}</div>
+    ${(c.notes && c.notes.trim()) ? `<div class="pdf-notes"><div class="pdf-block-label">General notes</div><div class="pdf-longtext">${escapeHtml(c.notes)}</div></div>` : ''}
+    ${ivSection}
+  </div>`;
+}
+function buildPrintRoot() {
+  const contacts = (state.contacts || []).slice().sort((a, b) => { const d = pdfStageIndex(a.stage) - pdfStageIndex(b.stage); if (d) return d; return (a.name || '').toLowerCase().localeCompare((b.name || '').toLowerCase()); });
+  const dateStr = new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+  const total = contacts.length; const totalInterviews = contacts.reduce((n, c) => n + (c.interviews || []).length, 0); const interviewedCount = contacts.filter(c => (c.interviews || []).length > 0).length;
+  const rosterRows = contacts.map((c, i) => { const st = getStage(c.stage); const ivc = (c.interviews || []).length; return `<tr class="${ivc ? 'iv-row' : ''}"><td class="num">${i + 1}</td><td><strong>${escapeHtml(c.name || '(Unnamed)')}</strong></td><td>${escapeHtml(c.company || '—')}</td><td>${escapeHtml(c.role || '—')}</td><td>${escapeHtml((c.segments || []).join(', ') || '—')}</td><td><span class="pdf-stage-pill" style="background:${st.color}">${escapeHtml(st.label)}</span></td><td>${escapeHtml(c.source || '—')}</td><td class="num">${ivc || '—'}</td></tr>`; }).join('');
+  const profiles = contacts.map((c, i) => pdfProfile(c, i + 1)).join('');
+  document.getElementById('print-root').innerHTML = `
+    <section class="pdf-page"><div class="pdf-cover"><h1 class="pdf-doc-title">Discovery CRM</h1><p class="pdf-doc-sub">Pipeline Snapshot &amp; Contact Directory &nbsp;·&nbsp; ${total} contacts &nbsp;·&nbsp; ${interviewedCount} interviewed &nbsp;·&nbsp; ${totalInterviews} interviews logged &nbsp;·&nbsp; ${escapeHtml(dateStr)}</p></div>
+      <div class="pdf-section-title">Pipeline Snapshot</div><div class="pdf-section-note">All ${total} contacts grouped by pipeline stage. Bold entries have logged interviews.</div>${pdfSnapshot(contacts)}</section>
+    <section class="pdf-page"><div class="pdf-section-title">Contact Roster (${total})</div><div class="pdf-section-note">Highlighted rows are contacts you have interviewed.</div>
+      <table class="pdf-table pdf-roster"><thead><tr><th class="num">#</th><th>Name</th><th>Company</th><th>Role</th><th>Segments</th><th>Stage</th><th>Source</th><th class="num">Intv.</th></tr></thead><tbody>${rosterRows || '<tr><td colspan="8" class="pdf-muted">No contacts yet</td></tr>'}</tbody></table></section>
+    <section class="pdf-profiles"><div class="pdf-section-title">Contact Profiles</div><div class="pdf-section-note">Contacts with interviews are highlighted in gold and include a summary of each conversation.</div>${profiles || '<div class="pdf-muted">No contacts to show.</div>'}</section>`;
+}
+function exportPdf() {
+  if (!(state.contacts || []).length) { showToast('Add a contact before exporting'); return; }
+  buildPrintRoot(); showToast('Opening print dialog — choose "Save as PDF"'); setTimeout(() => { window.print(); }, 320);
+}
+
+/* ============================================================
+   WIRE TOP-LEVEL CONTROLS + INIT
+   ============================================================ */
+function bootApp() {
+  document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => setView(t.dataset.view)));
+  const searchInput = document.getElementById('search-input');
+  searchInput.value = state.searchQuery || '';
+  searchInput.addEventListener('input', e => {
+    state.searchQuery = e.target.value; save();
+    if (state.activeView !== 'settings') renderFilterBar();
+    if (state.activeView === 'pipeline') renderPipeline();
+    if (state.activeView === 'list') renderList();
+  });
+  document.getElementById('quick-add-btn').addEventListener('click', quickAdd);
+  document.getElementById('quick-add-input').addEventListener('keydown', e => { if (e.key === 'Enter') quickAdd(); });
+  document.getElementById('ai-import-btn').addEventListener('click', openAiImportModal);
+  document.getElementById('export-pdf-btn').addEventListener('click', exportPdf);
+  document.getElementById('open-reactioner-btn').addEventListener('click', openReactionerHome);
+  setView(state.activeView || 'pipeline');
+}
+
+boot();
+</script>
+</body>
+</html>
