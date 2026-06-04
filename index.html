@@ -497,6 +497,8 @@ let state = readCache(LEGACY_KEY) || defaultState();
 
 /* ---- saving ---- */
 let cloudSaveTimer = null;
+let pendingSave = false;
+let refreshing = false;
 function save() {
   try { localStorage.setItem(localCacheKey(), JSON.stringify(state)); } catch (e) {}
   updateContactCount();
@@ -504,9 +506,10 @@ function save() {
 }
 function scheduleCloudSave() {
   if (!sb || !currentUserId || cloudTableMissing) return;
+  pendingSave = true;
   setSyncStatus('saving', 'Saving…');
   clearTimeout(cloudSaveTimer);
-  cloudSaveTimer = setTimeout(cloudSaveNow, 800);
+  cloudSaveTimer = setTimeout(function () { cloudSaveTimer = null; cloudSaveNow(); }, 800);
 }
 function isMissingTable(e) {
   const m = ((e && (e.message || e.hint || e.code || e.details)) || '').toString().toLowerCase();
@@ -520,9 +523,10 @@ async function cloudSaveNow() {
     const { error } = await sb.from(CRM_TABLE).upsert({ user_id: currentUserId, data: state, updated_at: now }, { onConflict: 'user_id' });
     if (error) throw error;
     cloudUpdatedAt = now;
+    pendingSave = false;
     setSyncStatus('ok', 'Synced');
   } catch (e) {
-    if (isMissingTable(e)) { cloudTableMissing = true; setSyncStatus('err', 'Cloud table not set up'); return; }
+    if (isMissingTable(e)) { cloudTableMissing = true; pendingSave = false; setSyncStatus('err', 'Cloud table not set up'); return; }
     setSyncStatus('err', 'Offline — saved locally');
     clearTimeout(cloudSaveTimer);
     cloudSaveTimer = setTimeout(cloudSaveNow, 5000);
@@ -670,15 +674,19 @@ function startLocalOnly() {
 }
 async function refreshFromCloud() {
   if (!sb || !currentUserId || cloudTableMissing) return;
+  if (pendingSave || refreshing) return; // never clobber unsaved local changes
+  refreshing = true;
   try {
     const row = await cloudLoad(currentUserId);
-    if (row && row.updated_at && row.updated_at !== cloudUpdatedAt && row.data && Array.isArray(row.data.contacts)) {
+    if (pendingSave) return; // a local change landed while fetching
+    if (row && row.updated_at && row.updated_at !== cloudUpdatedAt && (!cloudUpdatedAt || row.updated_at > cloudUpdatedAt) && row.data && Array.isArray(row.data.contacts)) {
       state = migrate(row.data); cloudUpdatedAt = row.updated_at;
       try { localStorage.setItem(localCacheKey(), JSON.stringify(state)); } catch (e) {}
-      setView(state.activeView || 'pipeline');
+      const modalOpen = document.getElementById('modal-back').classList.contains('show');
+      if (!modalOpen) setView(state.activeView || 'pipeline');
       setSyncStatus('ok', 'Synced — updated');
     }
-  } catch (e) {}
+  } catch (e) {} finally { refreshing = false; }
 }
 function startFocusRefresh() {
   document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshFromCloud(); });
