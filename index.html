@@ -365,7 +365,52 @@
 [data-theme="dark"] .contact-link.email { background: #11243a; border-color: #1e3a52; }
 [data-theme="dark"] .contact-link.phone { background: #0f2a1c; border-color: #1f4631; }
 [data-theme="dark"] .reaction-summary { border-color: #4a4327; }
+/* dark-mode legibility fixes for cards that hardcoded light backgrounds */
+[data-theme="dark"] .interview-card.reactioner { background: var(--panel); border-color: #4a4327; }
+[data-theme="dark"] .extract-result.red-flags-panel { background: var(--soft); border-color: var(--border); }
+[data-theme="dark"] .bulk-bar { background: var(--accent-soft); border-color: var(--accent-border); }
+[data-theme="dark"] .card-del { background: #3a1f22; color: #fda4a4; }
+
+/* ===== Midnight scheme (deep indigo) — overrides Green when data-scheme="midnight" ===== */
+[data-theme="dark"][data-scheme="midnight"] {
+  --bg: #0b1020; --panel: #131a2e; --surface: #131a2e; --text: #e6eaf5; --muted: #8b95b2;
+  --border: #283250; --soft: #161e36;
+  --accent: #6366f1; --accent-2: #818cf8; --accent-soft: #1e2547; --accent-border: #3a4675; --ink: #c7d2fe;
+  --ig: #d8b4fe;
+}
+[data-theme="dark"][data-scheme="midnight"] .btn.primary,
+[data-theme="dark"][data-scheme="midnight"] .tab.active { color: #ffffff; }
+[data-theme="dark"][data-scheme="midnight"] input::placeholder,
+[data-theme="dark"][data-scheme="midnight"] textarea::placeholder { color: #6b7799; }
+[data-theme="dark"][data-scheme="midnight"] #auth-gate { background: linear-gradient(160deg, #0d1226, #0b1020); }
+[data-theme="dark"][data-scheme="midnight"] .contact-link.ig { background: #241a33; border-color: #3d2f52; }
+[data-theme="dark"][data-scheme="midnight"] .contact-link.email { background: #15233f; border-color: #28406a; }
+[data-theme="dark"][data-scheme="midnight"] .contact-link.phone { background: #182a3a; border-color: #2a4a63; }
+[data-theme="dark"][data-scheme="midnight"] .card-del { background: #2a1d3a; color: #c4b5fd; }
+
+/* scheme toggle only matters in dark mode, so reveal it there */
+.scheme-toggle { display: none; }
+[data-theme="dark"] .scheme-toggle { display: inline-flex; align-items: center; gap: 4px; }
+
 @media print { :root, [data-theme="dark"] { --surface: #ffffff; } }
+
+/* ===== bulk select + drag-to-delete ===== */
+.bulk-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 0 0 12px; padding: 8px 12px; background: var(--accent-soft); border: 1px solid var(--accent-border); border-radius: 11px; font-size: 13px; }
+.bulk-bar .bulk-count { display: inline-flex; align-items: center; gap: 7px; font-weight: 700; color: var(--text); cursor: pointer; user-select: none; }
+.bulk-bar .bulk-count input { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
+.bulk-bar .spacer { flex: 1 1 auto; }
+.bulk-bar .btn[disabled] { opacity: 0.45; cursor: not-allowed; }
+.contact-card { padding-left: 32px; }
+.card-select { position: absolute; top: 10px; left: 9px; width: 16px; height: 16px; cursor: pointer; z-index: 3; accent-color: var(--accent); }
+.contact-card.selected { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-border); }
+table.list td.sel-cell, table.list th.sel-cell { width: 30px; text-align: center; }
+table.list .row-select { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
+table.list tbody tr.selected { background: var(--accent-soft); }
+.delete-zone { position: fixed; top: 0; left: 0; bottom: 0; width: 92px; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: #fff; font-size: 11.5px; font-weight: 800; letter-spacing: 0.4px; text-align: center; line-height: 1.25; z-index: 200; pointer-events: none; background: linear-gradient(90deg, rgba(220,38,38,0.94), rgba(220,38,38,0)); transition: background 0.12s ease; }
+.delete-zone.show { display: flex; pointer-events: auto; }
+.delete-zone.armed { background: linear-gradient(90deg, rgba(153,27,27,0.99), rgba(153,27,27,0.35)); }
+.delete-zone .dz-icon { font-size: 30px; }
+@media (max-width: 560px) { .delete-zone { width: 68px; font-size: 10.5px; } .delete-zone .dz-icon { font-size: 24px; } }
 
 </style>
 </head>
@@ -389,6 +434,7 @@
     <div class="topbar-right">
       <input type="text" id="search-input" class="search-box" placeholder="🔍 Search name, company, role…" />
       <button class="btn ghost theme-toggle" id="theme-toggle" title="Toggle dark / light mode" aria-label="Toggle dark mode">🌙</button>
+      <button class="btn ghost scheme-toggle" id="scheme-toggle" title="Switch dark color scheme (Green / Midnight)" aria-label="Switch dark color scheme">🌿 Green</button>
     </div>
   </div>
 
@@ -413,6 +459,14 @@
 
   <div class="filter-bar" id="filter-bar"></div>
 
+  <div class="bulk-bar" id="bulk-bar" style="display:none">
+    <label class="bulk-count"><input type="checkbox" id="bulk-master" title="Select all shown"> <span id="bulk-count-text">0 selected</span></label>
+    <span class="spacer"></span>
+    <button class="btn tiny ghost" id="bulk-clear">Clear</button>
+    <button class="btn tiny danger" id="bulk-delete">🗑 Delete selected</button>
+    <button class="btn tiny danger" id="bulk-delete-all">Delete all</button>
+  </div>
+
   <div id="view-pipeline"></div>
   <div id="view-list" style="display:none"></div>
   <div id="view-settings" style="display:none"></div>
@@ -426,6 +480,12 @@
 
 <div class="modal-back" id="modal-back"><div class="modal" id="modal"></div></div>
 <div class="toast" id="toast"></div>
+
+<!-- Drag a contact card here to delete it -->
+<div class="delete-zone" id="delete-zone" aria-hidden="true">
+  <span class="dz-icon">🗑</span>
+  <span>Drop here<br>to delete</span>
+</div>
 
 <!-- Drag-and-drop import overlay -->
 <div class="drop-overlay" id="drop-overlay">
@@ -814,6 +874,7 @@ function setView(v) {
   if (v === 'pipeline') renderPipeline();
   if (v === 'list') renderList();
   if (v === 'settings') renderSettings();
+  updateBulkBar();
 }
 
 /* ============================================================
@@ -872,7 +933,8 @@ function renderPipeline() {
         const interviewCount = (c.interviews || []).length;
         const segs = (c.segments || []).slice(0, 2);
         const links = [igChip(c), emailChip(c), phoneChip(c)].filter(Boolean).join('');
-        html += `<div class="contact-card" data-id="${c.id}" draggable="true" title="Drag to move, or click to open">
+        html += `<div class="contact-card ${selectedIds.has(c.id) ? 'selected' : ''}" data-id="${c.id}" draggable="true" title="Drag to move • drag left to delete • click to open">
+          <input type="checkbox" class="card-select" data-sel="${c.id}" ${selectedIds.has(c.id) ? 'checked' : ''} title="Select contact" />
           <button class="card-del" data-del="${c.id}" title="Delete contact">🗑</button>
           <div class="name">${escapeHtml(c.name || '(Unnamed)')}</div>
           ${c.company ? `<div class="company">${escapeHtml(c.company)}${c.role ? ' · ' + escapeHtml(c.role) : ''}</div>` : (c.role ? `<div class="company">${escapeHtml(c.role)}</div>` : '')}
@@ -890,15 +952,21 @@ function renderPipeline() {
   wrap.innerHTML = html;
 
   let dragMoved = false;
+  wireDeleteZone();
   wrap.querySelectorAll('.card-del').forEach(b => b.addEventListener('click', e => {
     e.stopPropagation();
     deleteContact(b.dataset.del);
   }));
+  wrap.querySelectorAll('.card-select').forEach(cb => {
+    cb.addEventListener('click', e => e.stopPropagation());
+    cb.addEventListener('change', e => { e.stopPropagation(); toggleSelect(cb.dataset.sel, cb.checked); });
+  });
   wrap.querySelectorAll('.contact-card').forEach(card => {
     card.addEventListener('click', () => { if (dragMoved) { dragMoved = false; return; } openContactDetail(card.dataset.id); });
-    card.addEventListener('dragstart', e => { dragMoved = true; e.dataTransfer.setData('text/plain', card.dataset.id); e.dataTransfer.effectAllowed = 'move'; card.classList.add('dragging'); });
-    card.addEventListener('dragend', () => { card.classList.remove('dragging'); wrap.querySelectorAll('.kanban-col.drop-target').forEach(c => c.classList.remove('drop-target')); setTimeout(() => { dragMoved = false; }, 50); });
+    card.addEventListener('dragstart', e => { dragMoved = true; e.dataTransfer.setData('text/plain', card.dataset.id); e.dataTransfer.effectAllowed = 'move'; card.classList.add('dragging'); showDeleteZone(true); });
+    card.addEventListener('dragend', () => { card.classList.remove('dragging'); showDeleteZone(false); wrap.querySelectorAll('.kanban-col.drop-target').forEach(c => c.classList.remove('drop-target')); setTimeout(() => { dragMoved = false; }, 50); });
   });
+  updateBulkBar();
   wrap.querySelectorAll('.kanban-col').forEach(col => {
     col.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; col.classList.add('drop-target'); });
     col.addEventListener('dragleave', e => { if (!col.contains(e.relatedTarget)) col.classList.remove('drop-target'); });
@@ -916,11 +984,108 @@ function deleteContact(id) {
   if (!c) return;
   if (!confirm(`Delete ${c.name || 'this contact'} and all their interviews?`)) return;
   state.contacts = state.contacts.filter(x => x.id !== id);
+  selectedIds.delete(id);
   save();
+  rerenderContacts();
+  showToast('Contact deleted');
+}
+
+/* ============================================================
+   SELECTION + BULK DELETE
+   ============================================================ */
+const selectedIds = new Set();
+
+function rerenderContacts() {
   if (state.activeView === 'pipeline') renderPipeline();
   if (state.activeView === 'list') renderList();
   renderFilterBar();
-  showToast('Contact deleted');
+  updateBulkBar();
+}
+
+function toggleSelect(id, on) {
+  if (on) selectedIds.add(id); else selectedIds.delete(id);
+  // reflect on currently rendered card / row without a full re-render
+  document.querySelectorAll(`[data-id="${CSS.escape(id)}"]`).forEach(el => {
+    if (el.classList.contains('contact-card') || el.tagName === 'TR') el.classList.toggle('selected', on);
+  });
+  updateBulkBar();
+}
+
+function updateBulkBar() {
+  const bar = document.getElementById('bulk-bar');
+  if (!bar) return;
+  // prune ids that no longer exist
+  const liveIds = new Set((state.contacts || []).map(c => c.id));
+  for (const id of [...selectedIds]) if (!liveIds.has(id)) selectedIds.delete(id);
+
+  const shown = filteredContacts();
+  const total = (state.contacts || []).length;
+  const n = selectedIds.size;
+  // Show the bar whenever there are contacts to act on, or a selection is active
+  bar.style.display = (state.activeView === 'settings' || total === 0) ? 'none' : 'flex';
+
+  const countText = document.getElementById('bulk-count-text');
+  if (countText) countText.textContent = n > 0 ? `${n} selected` : 'Select';
+  const master = document.getElementById('bulk-master');
+  if (master) {
+    const shownSelected = shown.filter(c => selectedIds.has(c.id)).length;
+    master.checked = shown.length > 0 && shownSelected === shown.length;
+    master.indeterminate = shownSelected > 0 && shownSelected < shown.length;
+  }
+  const delBtn = document.getElementById('bulk-delete');
+  if (delBtn) delBtn.disabled = n === 0;
+}
+
+function deleteSelected() {
+  const ids = [...selectedIds];
+  if (ids.length === 0) return;
+  if (!confirm(`Delete ${ids.length} selected contact${ids.length === 1 ? '' : 's'} and all their interviews? This cannot be undone.`)) return;
+  const idSet = new Set(ids);
+  state.contacts = state.contacts.filter(c => !idSet.has(c.id));
+  selectedIds.clear();
+  save();
+  rerenderContacts();
+  showToast(`${ids.length} contact${ids.length === 1 ? '' : 's'} deleted`);
+}
+
+function deleteAllContacts() {
+  const total = (state.contacts || []).length;
+  if (total === 0) return;
+  if (!confirm(`Delete ALL ${total} contacts and every interview attached to them? This cannot be undone.`)) return;
+  if (!confirm(`Are you absolutely sure? This permanently removes all ${total} contacts.`)) return;
+  state.contacts = [];
+  selectedIds.clear();
+  save();
+  rerenderContacts();
+  showToast('All contacts deleted');
+}
+
+function selectAllShown(on) {
+  const shown = filteredContacts();
+  for (const c of shown) { if (on) selectedIds.add(c.id); else selectedIds.delete(c.id); }
+  rerenderContacts();
+}
+
+/* Left-edge "drag a card here to delete" drop zone (pipeline view). */
+function showDeleteZone(on) {
+  const dz = document.getElementById('delete-zone');
+  if (!dz) return;
+  dz.classList.toggle('show', !!on);
+  if (!on) dz.classList.remove('armed');
+}
+function wireDeleteZone() {
+  const dz = document.getElementById('delete-zone');
+  if (!dz || dz._wired) return;
+  dz._wired = true;
+  dz.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; dz.classList.add('armed'); });
+  dz.addEventListener('dragleave', e => { if (!dz.contains(e.relatedTarget)) dz.classList.remove('armed'); });
+  dz.addEventListener('drop', e => {
+    e.preventDefault();
+    dz.classList.remove('armed');
+    showDeleteZone(false);
+    const id = e.dataTransfer.getData('text/plain');
+    if (id) deleteContact(id);
+  });
 }
 
 /* ============================================================
@@ -935,10 +1100,11 @@ function renderList() {
       <h3>No contacts yet</h3>
       <p>Use the <strong>Quick add</strong> bar above, click <strong>✨ Import list</strong>, or drag a CSV/JSON file onto the window.</p>
     </div>`;
+    updateBulkBar();
     return;
   }
   let html = '<div class="list-table-wrap"><table class="list"><thead><tr>';
-  html += '<th>Name</th><th>Company</th><th>Role</th><th>Instagram</th><th>Email</th><th>Phone</th><th>Segments</th><th>Stage</th><th>Source</th><th>Last interview</th><th></th>';
+  html += '<th class="sel-cell"></th><th>Name</th><th>Company</th><th>Role</th><th>Instagram</th><th>Email</th><th>Phone</th><th>Segments</th><th>Stage</th><th>Source</th><th>Last interview</th><th></th>';
   html += '</tr></thead><tbody>';
   for (const c of contacts) {
     const stage = getStage(c.stage);
@@ -946,7 +1112,8 @@ function renderList() {
     const lastInt = interviews.length > 0 ? interviews.map(i => i.date).filter(Boolean).sort().pop() : '';
     const segs = (c.segments || []).join(', ');
     const igh = igHandle(c.instagram);
-    html += `<tr data-id="${c.id}">
+    html += `<tr data-id="${c.id}" class="${selectedIds.has(c.id) ? 'selected' : ''}">
+      <td class="sel-cell"><input type="checkbox" class="row-select" data-sel="${c.id}" ${selectedIds.has(c.id) ? 'checked' : ''} onclick="event.stopPropagation()"></td>
       <td><strong>${escapeHtml(c.name || '(Unnamed)')}</strong></td>
       <td>${escapeHtml(c.company || '')}</td>
       <td>${escapeHtml(c.role || '')}</td>
@@ -964,6 +1131,8 @@ function renderList() {
   wrap.innerHTML = html;
   wrap.querySelectorAll('tbody tr').forEach(tr => tr.addEventListener('click', () => openContactDetail(tr.dataset.id)));
   wrap.querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); deleteContact(b.dataset.del); }));
+  wrap.querySelectorAll('.row-select').forEach(cb => cb.addEventListener('change', e => { e.stopPropagation(); toggleSelect(cb.dataset.sel, cb.checked); }));
+  updateBulkBar();
 }
 
 /* ============================================================
@@ -1974,15 +2143,35 @@ function exportPdf() {
 /* ============================================================
    WIRE TOP-LEVEL CONTROLS + INIT
    ============================================================ */
+function crmThemeColor(){
+  var m = document.querySelector('meta[name="theme-color"]'); if (!m) return;
+  var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  if (!dark) { m.setAttribute('content', '#4f46e5'); return; }
+  m.setAttribute('content', currentScheme() === 'midnight' ? '#0b1020' : '#0f1411');
+}
 function applyTheme(t){
   t = (t === 'dark') ? 'dark' : 'light';
   document.documentElement.setAttribute('data-theme', t);
   var b = document.getElementById('theme-toggle'); if (b) b.textContent = (t === 'dark') ? '☀️' : '🌙';
-  var m = document.querySelector('meta[name="theme-color"]'); if (m) m.setAttribute('content', (t === 'dark') ? '#0f1411' : '#4f46e5');
+  crmThemeColor();
   try { localStorage.setItem('crm-theme', t); } catch (e) {}
 }
 function currentTheme(){ return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'; }
+function currentScheme(){ return document.documentElement.getAttribute('data-scheme') === 'midnight' ? 'midnight' : 'green'; }
+function applyScheme(s){
+  s = (s === 'midnight') ? 'midnight' : 'green';
+  document.documentElement.setAttribute('data-scheme', s);
+  var sb = document.getElementById('scheme-toggle');
+  if (sb) {
+    sb.textContent = (s === 'midnight') ? '🌌 Midnight' : '🌿 Green';
+    sb.title = 'Dark color scheme: ' + (s === 'midnight' ? 'Midnight (tap for Green)' : 'Green (tap for Midnight)');
+  }
+  crmThemeColor();
+  try { localStorage.setItem('crm-scheme', s); } catch (e) {}
+}
 function initTheme(){
+  var s = null; try { s = localStorage.getItem('crm-scheme'); } catch (e) {}
+  applyScheme(s || 'green');
   var t = null; try { t = localStorage.getItem('crm-theme'); } catch (e) {}
   if (!t) t = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
   applyTheme(t);
@@ -2004,6 +2193,16 @@ function bootApp() {
   document.getElementById('export-pdf-btn').addEventListener('click', exportPdf);
   document.getElementById('open-reactioner-btn').addEventListener('click', openReactionerHome);
   var _tt = document.getElementById('theme-toggle'); if (_tt) _tt.addEventListener('click', function(){ applyTheme(currentTheme() === 'dark' ? 'light' : 'dark'); });
+  var _st = document.getElementById('scheme-toggle'); if (_st) _st.addEventListener('click', function(){ applyScheme(currentScheme() === 'midnight' ? 'green' : 'midnight'); });
+  // bulk selection / delete controls
+  const bMaster = document.getElementById('bulk-master');
+  if (bMaster) bMaster.addEventListener('change', e => selectAllShown(e.target.checked));
+  const bClear = document.getElementById('bulk-clear');
+  if (bClear) bClear.addEventListener('click', () => { selectedIds.clear(); rerenderContacts(); });
+  const bDel = document.getElementById('bulk-delete');
+  if (bDel) bDel.addEventListener('click', deleteSelected);
+  const bDelAll = document.getElementById('bulk-delete-all');
+  if (bDelAll) bDelAll.addEventListener('click', deleteAllContacts);
   setView(state.activeView || 'pipeline');
 }
 
