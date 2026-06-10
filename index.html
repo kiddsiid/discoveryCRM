@@ -412,6 +412,56 @@ table.list tbody tr.selected { background: var(--accent-soft); }
 .delete-zone .dz-icon { font-size: 30px; }
 @media (max-width: 560px) { .delete-zone { width: 68px; font-size: 10.5px; } .delete-zone .dz-icon { font-size: 24px; } }
 
+/* ===== OUTREACH ENGINE ===== */
+.ov-wrap { display: flex; flex-direction: column; gap: 14px; }
+.ov-dash { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+.ov-stat { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 12px 14px; box-shadow: var(--shadow); cursor: pointer; transition: all 0.12s ease; }
+.ov-stat:hover { border-color: var(--accent-border); transform: translateY(-1px); }
+.ov-stat.active { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-border); }
+.ov-stat .n { font-size: 24px; font-weight: 800; line-height: 1; }
+.ov-stat .l { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; margin-top: 5px; font-weight: 700; display: flex; align-items: center; gap: 5px; }
+.ov-stat .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.ov-subtabs { display: flex; gap: 4px; background: var(--panel); padding: 6px; border-radius: 14px; box-shadow: var(--shadow); overflow-x: auto; }
+.ov-subtab { padding: 8px 15px; border-radius: 10px; border: none; background: transparent; color: var(--muted); font-weight: 600; cursor: pointer; font-size: 13.5px; white-space: nowrap; }
+.ov-subtab.active { background: linear-gradient(135deg, var(--accent-2), var(--accent)); color: #fff; }
+[data-theme="dark"] .ov-subtab.active, [data-theme="dark"][data-scheme="midnight"] .ov-subtab.active { color: #fff; }
+[data-theme="dark"] .ov-subtab.active { color: #06210f; }
+[data-theme="dark"][data-scheme="midnight"] .ov-subtab.active { color: #fff; }
+.ov-subtab:hover:not(.active) { background: var(--soft); color: var(--text); }
+.ov-section-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 4px 0 2px; }
+.ov-section-head h3 { margin: 0; font-size: 16px; }
+.ov-section-head .sp { flex: 1; }
+.ov-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; box-shadow: var(--shadow); }
+.ov-card.due { border-color: #f5d98a; }
+[data-theme="dark"] .ov-card.due { border-color: #4a4327; }
+.ov-card-head { display: flex; align-items: flex-start; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+.ov-card-head .who { flex: 1; min-width: 180px; }
+.ov-card-head .nm { font-weight: 700; font-size: 15px; }
+.ov-card-head .co { font-size: 12.5px; color: var(--muted); margin-top: 1px; }
+.ov-pill { display: inline-flex; align-items: center; gap: 5px; padding: 2px 9px; border-radius: 11px; font-size: 11px; font-weight: 700; color: #fff; }
+.ov-tag { font-size: 10px; padding: 2px 7px; border-radius: 9px; font-weight: 700; color: #fff; }
+.ov-controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
+.ov-controls .seg { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; }
+.ov-controls select { width: auto; font-size: 12.5px; padding: 6px 8px; }
+.ov-msg { width: 100%; min-height: 92px; font-size: 13px; line-height: 1.5; font-family: inherit; }
+.ov-msg-actions { display: flex; gap: 7px; flex-wrap: wrap; align-items: center; margin-top: 8px; }
+.ov-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+.ov-meta-line { font-size: 12px; color: var(--muted); display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.ov-links { display: flex; gap: 5px; flex-wrap: wrap; }
+.ov-empty { padding: 40px; text-align: center; color: var(--muted); }
+.ov-empty .big-icon { font-size: 38px; margin-bottom: 8px; }
+.ov-empty h3 { color: var(--text); margin-bottom: 6px; }
+.ov-setup .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.ov-brief { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; background: var(--accent-soft); border: 1px solid var(--accent-border); color: var(--ink); border-radius: 12px; padding: 9px 13px; font-size: 13.5px; }
+.ov-brief .btn { margin-left: auto; }
+.ov-cap { font-size: 12.5px; color: var(--muted); background: var(--soft); border: 1px solid var(--border); border-radius: 10px; padding: 7px 11px; }
+.ov-cap.warn { background: #fff7e6; border-color: #f5d98a; color: #92660a; }
+[data-theme="dark"] .ov-cap.warn { background: var(--soft); border-color: #4a4327; color: #e8d9a8; }
+.ov-hint { font-size: 12px; color: var(--muted); padding: 2px 2px 0; }
+.ov-group { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); margin: 8px 0 2px; }
+@media (max-width: 1100px) { .ov-dash { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 680px) { .ov-dash { grid-template-columns: repeat(2, 1fr); } .ov-setup .form-row { grid-template-columns: 1fr; } }
+
 </style>
 </head>
 <body>
@@ -453,6 +503,7 @@ table.list tbody tr.selected { background: var(--accent-soft); }
 
   <div class="tabs">
     <button class="tab active" data-view="pipeline">🪜 Pipeline</button>
+    <button class="tab" data-view="outreach">🚀 Outreach</button>
     <button class="tab" data-view="list">📜 List</button>
     <button class="tab" data-view="settings">⚙️ Settings</button>
   </div>
@@ -468,6 +519,7 @@ table.list tbody tr.selected { background: var(--accent-soft); }
   </div>
 
   <div id="view-pipeline"></div>
+  <div id="view-outreach" style="display:none"></div>
   <div id="view-list" style="display:none"></div>
   <div id="view-settings" style="display:none"></div>
 
@@ -556,7 +608,7 @@ function defaultContact() {
     id: uid(), name: '', company: '', role: '', phone: '', email: '', instagram: '',
     segments: [], source: '', approachMethod: '', stage: 'not-contacted',
     createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
-    nextFollowup: '', notes: '', interviews: []
+    nextFollowup: '', notes: '', interviews: [], outreach: defaultOutreach()
   };
 }
 function defaultInterview() {
@@ -575,6 +627,7 @@ function defaultState() {
     contacts: [], segments: [...DEFAULT_SEGMENTS], sources: [...DEFAULT_SOURCES],
     approachMethods: [...DEFAULT_APPROACH], activeView: 'pipeline', searchQuery: '',
     filters: defaultFilters(), integration: defaultIntegration(),
+    outreachSettings: defaultOutreachSettings(),
     aiSettings: { apiKey: '', model: 'claude-haiku-4-5-20251001' }
   };
 }
@@ -586,6 +639,8 @@ function migrate(s) {
   if (!s.approachMethods) s.approachMethods = [...DEFAULT_APPROACH];
   if (!s.aiSettings) s.aiSettings = { apiKey: '', model: 'claude-haiku-4-5-20251001' };
   if (!s.integration) s.integration = defaultIntegration();
+  if (!s.outreachSettings) s.outreachSettings = defaultOutreachSettings();
+  s.contacts.forEach(function (c) { if (!c.outreach || typeof c.outreach !== 'object') c.outreach = defaultOutreach(); });
   s.filters = Object.assign(defaultFilters(), s.filters || {});
   return s;
 }
@@ -863,15 +918,16 @@ function filtersActive() {
 /* ============================================================
    VIEW SWITCHING
    ============================================================ */
-const VIEWS = ['pipeline', 'list', 'settings'];
+const VIEWS = ['pipeline', 'outreach', 'list', 'settings'];
 function setView(v) {
   state.activeView = v; save();
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === v));
   VIEWS.forEach(name => { const el = document.getElementById('view-' + name); if (el) el.style.display = (name === v) ? '' : 'none'; });
   const fb = document.getElementById('filter-bar');
-  if (fb) fb.style.display = (v === 'settings') ? 'none' : '';
-  if (v !== 'settings') renderFilterBar();
+  if (fb) fb.style.display = (v === 'settings' || v === 'outreach') ? 'none' : '';
+  if (v !== 'settings' && v !== 'outreach') renderFilterBar();
   if (v === 'pipeline') renderPipeline();
+  if (v === 'outreach') renderOutreach();
   if (v === 'list') renderList();
   if (v === 'settings') renderSettings();
   updateBulkBar();
@@ -942,6 +998,7 @@ function renderPipeline() {
           <div class="meta">
             ${segs.map(s => `<span class="tag">${escapeHtml(s)}</span>`).join('')}
             ${interviewCount > 0 ? `<span class="tag interviews">📝 ${interviewCount} interview${interviewCount === 1 ? '' : 's'}</span>` : ''}
+            ${ovKanbanTag(c)}
           </div>
         </div>`;
       }
@@ -1022,7 +1079,7 @@ function updateBulkBar() {
   const total = (state.contacts || []).length;
   const n = selectedIds.size;
   // Show the bar whenever there are contacts to act on, or a selection is active
-  bar.style.display = (state.activeView === 'settings' || total === 0) ? 'none' : 'flex';
+  bar.style.display = (state.activeView === 'settings' || state.activeView === 'outreach' || total === 0) ? 'none' : 'flex';
 
   const countText = document.getElementById('bulk-count-text');
   if (countText) countText.textContent = n > 0 ? `${n} selected` : 'Select';
@@ -1950,7 +2007,7 @@ function renderAiImportPreview() {
     document.querySelectorAll('[data-include]:checked').forEach(cb => { const i = parseInt(cb.dataset.include, 10); if (contacts[i]) selected.push(contacts[i]); });
     if (selected.length === 0) { showToast('Pick at least one contact'); return; }
     let added = 0;
-    for (const sc of selected) { const c = defaultContact(); Object.assign(c, sc); c.stage = 'not-contacted'; state.contacts.push(c); added++; }
+    for (const sc of selected) { const c = defaultContact(); Object.assign(c, sc); c.stage = 'not-contacted'; if (c.outreach) c.outreach.persona = inferPersona(c) || c.outreach.persona; state.contacts.push(c); added++; }
     save(); closeModal(); setView('pipeline'); showToast(`Imported ${added} contact${added === 1 ? '' : 's'}`);
   });
 }
@@ -2023,6 +2080,7 @@ function importCsv(txt) {
     if (iNotes >= 0) c.notes = get(iNotes);
     const pain = get(iPain), lang = get(iLang), next = get(iNext), rec = get(iRecording);
     if (pain || lang || next || rec) { const iv = defaultInterview(); iv.painPoints = pain; iv.language = lang; iv.nextSteps = next; iv.recordingUrl = rec; c.interviews.push(iv); }
+    if (c.outreach) c.outreach.persona = inferPersona(c) || c.outreach.persona;
     newContacts.push(c);
   }
   if (newContacts.length === 0) { alert('Could not parse any rows. Check for a Name or Company column.'); return; }
@@ -2138,6 +2196,761 @@ function buildPrintRoot() {
 function exportPdf() {
   if (!(state.contacts || []).length) { showToast('Add a contact before exporting'); return; }
   buildPrintRoot(); showToast('Opening print dialog — choose "Save as PDF"'); setTimeout(() => { window.print(); }, 320);
+}
+
+/* ============================================================
+   OUTREACH ENGINE  — automation-forward "needs contacting" system
+   Paste-and-send only: generates drafts; the owner sends manually.
+   Reuses callClaude() for personalization; static templates as fallback.
+   ============================================================ */
+
+const OUTREACH_STATUSES = [
+  { id: 'not_contacted', label: 'Not contacted',    color: 'var(--stage-not-contacted)', icon: '✉️' },
+  { id: 'contacted',     label: 'Contacted',        color: 'var(--stage-contacted)',     icon: '📤' },
+  { id: 'replied',       label: 'Replied',          color: '#f59e0b',                    icon: '💬' },
+  { id: 'booked',        label: 'Interview booked', color: 'var(--stage-talked-to)',     icon: '✅' },
+  { id: 'no_response',   label: 'No response',      color: 'var(--stage-cancelled)',     icon: '🚫' }
+];
+const OUTREACH_STATUS_IDS = OUTREACH_STATUSES.map(s => s.id);
+function ovStatusMeta(id) { return OUTREACH_STATUSES.find(s => s.id === id) || OUTREACH_STATUSES[0]; }
+
+function defaultOutreachSettings() {
+  return {
+    ownerName: 'Oli',
+    followupDays: 4,
+    dailyTarget: 10,
+    sendCap: 25,
+    personas: {
+      culinary:   { label: 'Culinary (MBA)', study: "an MBA student studying the culinary and food-business world" },
+      realestate: { label: 'Real estate',    study: "a student studying the real estate industry" }
+    }
+  };
+}
+function defaultOutreach() {
+  return { status: 'not_contacted', persona: '', channel: '', dateContacted: '', followups: [], aiDrafts: null, aiPersona: '' };
+}
+function ovSettings() {
+  if (!state.outreachSettings) state.outreachSettings = defaultOutreachSettings();
+  const d = defaultOutreachSettings();
+  state.outreachSettings.personas = Object.assign({}, d.personas, state.outreachSettings.personas || {});
+  return state.outreachSettings;
+}
+function ovPersonaCfg(key) { const s = ovSettings(); return s.personas[key] || s.personas.culinary; }
+
+function ensureOutreach(c) {
+  if (!c.outreach || typeof c.outreach !== 'object') c.outreach = defaultOutreach();
+  const o = c.outreach;
+  if (!OUTREACH_STATUS_IDS.includes(o.status)) o.status = 'not_contacted';
+  if (!Array.isArray(o.followups)) o.followups = [];
+  if (typeof o.persona !== 'string') o.persona = '';
+  if (typeof o.channel !== 'string') o.channel = '';
+  if (typeof o.dateContacted !== 'string') o.dateContacted = '';
+  return o;
+}
+
+/* ---- persona / channel inference ---- */
+function inferPersona(c) {
+  const hay = ((c.segments || []).join(' ') + ' ' + (c.role || '') + ' ' + (c.company || '') + ' ' + (c.notes || '')).toLowerCase();
+  const realEstate = /(realtor|real[\s-]?estate|realty|broker|brokerage|\bagent\b|property|properties|\bhomes\b|listing|\bmls\b|keller|re\/?max|coldwell|compass|sotheby)/;
+  const culinary   = /(food|truck|cater|restaurant|chef|kitchen|bbq|barbecue|bakery|baker|caf[eé]|coffee|culinary|menu|eatery|diner|taco|pizza|grill|brewery|bistro|deli)/;
+  if (realEstate.test(hay)) return 'realestate';
+  if (culinary.test(hay)) return 'culinary';
+  return '';
+}
+function ovPersonaKey(c) {
+  const o = ensureOutreach(c);
+  if (o.persona === 'culinary' || o.persona === 'realestate') return o.persona;
+  return inferPersona(c) || 'culinary';
+}
+function ovHasChannel(c) { return (igHandle(c.instagram) || (c.phone || '').trim()) ? 1 : 0; }
+function ovDefaultChannel(c) {
+  const o = ensureOutreach(c);
+  if (o.channel === 'ig' || o.channel === 'text') return o.channel;
+  const hasIg = !!igHandle(c.instagram), hasPhone = !!(c.phone || '').trim();
+  if (hasIg && !hasPhone) return 'ig';
+  if (hasPhone) return 'text';
+  if (hasIg) return 'ig';
+  return 'text';
+}
+function ovFirstName(c) {
+  const n = (c.name || '').trim();
+  if (!n) return 'there';
+  return n.split(/\s+/)[0];
+}
+
+/* ---- static (offline) draft templates ---- */
+function ovBuildStatic(c) {
+  const s = ovSettings();
+  const owner = (s.ownerName || 'Oli').trim() || 'Oli';
+  const key = ovPersonaKey(c);
+  const p = ovPersonaCfg(key);
+  const first = ovFirstName(c);
+  const company = (c.company || '').trim();
+  let textDraft, igDraft;
+  if (key === 'realestate') {
+    const coClause = company ? ` over at ${company}` : '';
+    const coIG = company ? ` at ${company}` : '';
+    textDraft = `Hi ${first}, my name is ${owner} — I'm ${p.study}. I came across your work${coClause} and I'm doing a short study where I'm learning directly from realtors about how the business actually works day to day. Would you be open to a quick 15-minute chat sometime in the next week or two? No sales pitch at all — I'm genuinely just trying to learn from people in the field. Thanks so much!`;
+    igDraft = `Hi ${first}! I'm ${owner}, ${p.study}. I'm doing a short study learning from realtors${coIG} about how the business really works — would you be open to a quick 15-min chat? No pitch, promise, just learning 🙏`;
+  } else {
+    const coClause = company ? ` and was really impressed by what you're doing at ${company}` : '';
+    const coIG = company ? ` at ${company}` : '';
+    textDraft = `Hi ${first}, my name is ${owner} — I'm ${p.study}. I came across your business${coClause}. I'm doing a short study where I'm learning directly from people who run food businesses, and I'd love to hear about your experience. Would you be open to a quick 15-minute chat sometime in the next week or two? No sales pitch — I'm genuinely just trying to learn. Thanks so much!`;
+    igDraft = `Hi ${first}! I'm ${owner}, ${p.study} 🙌 Love what you're doing${coIG}. I'm doing a short study learning from people who actually run food businesses — would you be up for a quick 15-min chat? No pitch, just learning 🙏`;
+  }
+  const followupText = `Hi ${first}, just wanted to gently bump this up in case it got buried! Still would really love a quick 15 minutes to learn from your experience whenever works for you. Totally understand if you're slammed — even 10 minutes would mean a lot. Thanks again, ${owner}`;
+  const followupIg = `Hey ${first}! Just bumping this in case it got lost 🙂 Still would love a quick chat whenever suits you — no worries at all if you're busy!`;
+  return { textDraft, igDraft, followupText, followupIg };
+}
+function ovDrafts(c) {
+  const o = ensureOutreach(c);
+  const stat = ovBuildStatic(c);
+  if (o.aiDrafts && o.aiPersona === ovPersonaKey(c)) {
+    return {
+      textDraft: o.aiDrafts.textDraft || stat.textDraft,
+      igDraft: o.aiDrafts.igDraft || stat.igDraft,
+      followupText: o.aiDrafts.followupText || stat.followupText,
+      followupIg: o.aiDrafts.followupIg || stat.followupIg
+    };
+  }
+  return stat;
+}
+function ovInitialMsg(c) { const d = ovDrafts(c); return ovDefaultChannel(c) === 'ig' ? d.igDraft : d.textDraft; }
+function ovFollowupMsg(c) { const d = ovDrafts(c); return ovDefaultChannel(c) === 'ig' ? d.followupIg : d.followupText; }
+function ovChannelLabel(ch) { return ch === 'ig' ? 'Instagram DM' : 'Text message'; }
+
+/* ---- AI personalization (optional, via callClaude) ---- */
+function ovAIPrompt(c, key) {
+  const s = ovSettings();
+  const owner = (s.ownerName || 'Oli').trim() || 'Oli';
+  const p = ovPersonaCfg(key);
+  const ctx = JSON.stringify({
+    firstName: ovFirstName(c), name: c.name || '', company: c.company || '', role: c.role || '',
+    segments: c.segments || [], instagram: igHandle(c.instagram), notes: (c.notes || '').slice(0, 500)
+  });
+  return `You write warm, genuine, NON-salesy outreach messages for ${owner}, who is ${p.study}. ${owner} wants to book a short (~15 minute) informational interview to learn from this person's real experience. This is NOT a sales pitch and must never read like one.
+
+Write FOUR messages for the contact below:
+1. "textDraft": an SMS/text message, 2-4 sentences. Warm, specific, references their name and business naturally, clear small ask for a 15-minute chat. No links, no subject line.
+2. "igDraft": an Instagram DM — shorter and more casual than the text (1-3 sentences), at most one tasteful emoji, same ask.
+3. "followupText": a short, low-pressure follow-up text for if they don't reply after a few days. No guilt-tripping.
+4. "followupIg": a very short, casual IG follow-up DM. Low pressure.
+
+Rules: Always use their first name. Personalize from company/role/notes when present, but DO NOT invent facts. Keep it human, not corporate. Sign as ${owner} only where natural. Vary the phrasing from generic templates.
+
+Contact: ${ctx}
+
+Return ONLY valid JSON, no other text: {"textDraft":"...","igDraft":"...","followupText":"...","followupIg":"..."}`;
+}
+async function ovGenerateAI(c) {
+  const key = state.aiSettings && state.aiSettings.apiKey;
+  const model = (state.aiSettings && state.aiSettings.model) || 'claude-haiku-4-5-20251001';
+  if (!key) throw new Error('No API key set');
+  const pk = ovPersonaKey(c);
+  const responseText = await callClaude(key, model, ovAIPrompt(c, pk), 1400);
+  let jsonText = responseText.trim();
+  const codeBlockMatch = jsonText.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+  if (codeBlockMatch) jsonText = codeBlockMatch[1];
+  const braceMatch = jsonText.match(/\{[\s\S]*\}/);
+  if (braceMatch) jsonText = braceMatch[0];
+  let parsed;
+  try { parsed = JSON.parse(jsonText); }
+  catch (e) { throw new Error('Could not parse AI response: ' + responseText.slice(0, 160)); }
+  const o = ensureOutreach(c);
+  o.aiDrafts = {
+    textDraft: String(parsed.textDraft || '').trim(),
+    igDraft: String(parsed.igDraft || '').trim(),
+    followupText: String(parsed.followupText || '').trim(),
+    followupIg: String(parsed.followupIg || '').trim()
+  };
+  o.aiPersona = pk;
+  c.updatedAt = new Date().toISOString();
+  save();
+}
+
+/* ---- time + status helpers ---- */
+function ovDaysSince(isoDate) {
+  if (!isoDate) return Infinity;
+  const then = new Date(isoDate);
+  if (isNaN(then.getTime())) return Infinity;
+  return Math.floor((Date.now() - then.getTime()) / 86400000);
+}
+function ovLastTouch(c) {
+  const o = ensureOutreach(c);
+  let last = o.dateContacted || '';
+  (o.followups || []).forEach(f => { if (f && f.date && f.date > last) last = f.date; });
+  return last;
+}
+function ovFollowupDue(c) {
+  const o = ensureOutreach(c);
+  if (o.status !== 'contacted') return false;
+  const n = (ovSettings().followupDays) || 4;
+  return ovDaysSince(ovLastTouch(c)) >= n;
+}
+function ovCounts() {
+  const out = { not_contacted: 0, contacted: 0, replied: 0, booked: 0, no_response: 0, followup_due: 0 };
+  (state.contacts || []).forEach(c => {
+    const o = ensureOutreach(c);
+    out[o.status] = (out[o.status] || 0) + 1;
+    if (ovFollowupDue(c)) out.followup_due++;
+  });
+  return out;
+}
+function ovQueue() {
+  const order = { culinary: 0, realestate: 1 };
+  return (state.contacts || []).filter(c => ensureOutreach(c).status === 'not_contacted')
+    .sort((a, b) => {
+      const ca = ovHasChannel(a), cb = ovHasChannel(b);
+      if (ca !== cb) return cb - ca;
+      const pa = order[ovPersonaKey(a)] !== undefined ? order[ovPersonaKey(a)] : 9;
+      const pb = order[ovPersonaKey(b)] !== undefined ? order[ovPersonaKey(b)] : 9;
+      if (pa !== pb) return pa - pb;
+      return (a.createdAt || '').localeCompare(b.createdAt || '');
+    });
+}
+function ovByStatus(status) { return (state.contacts || []).filter(c => ensureOutreach(c).status === status); }
+
+/* ---- per-day send cap + analytics + day-sheet ---- */
+function ovContactedTodayCount() {
+  const today = new Date().toISOString().slice(0, 10);
+  return (state.contacts || []).filter(c => ensureOutreach(c).dateContacted === today).length;
+}
+function ovSendCap() { const s = ovSettings(); return (typeof s.sendCap === 'number') ? s.sendCap : 25; }
+function ovDaysheetText() {
+  const q = ovQueue();
+  const target = (ovSettings().dailyTarget) || 10;
+  const batch = q.slice(0, target);
+  const lines = batch.map((c, i) => {
+    const ch = ovDefaultChannel(c);
+    const contactBits = [];
+    if (igHandle(c.instagram)) contactBits.push('@' + igHandle(c.instagram));
+    if ((c.phone || '').trim()) contactBits.push(c.phone.trim());
+    const head = (i + 1) + '. ' + (c.name || '(Unnamed)') + (c.company ? ' — ' + c.company : '')
+      + '  [' + ovChannelLabel(ch) + (contactBits.length ? ' · ' + contactBits.join(' · ') : '') + ']';
+    return head + '\n' + ovInitialMsg(c) + '\n';
+  });
+  return "Today's outreach — " + new Date().toLocaleDateString() + ' (' + batch.length + ' people)\n\n' + lines.join('\n');
+}
+function ovDownloadDaysheet() {
+  const text = ovDaysheetText();
+  const blob = new Blob([text], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'outreach-daysheet-' + new Date().toISOString().slice(0, 10) + '.txt';
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  showToast('Day-sheet downloaded');
+}
+function ovAnalytics() {
+  const rows = { persona: {}, channel: {} };
+  function bump(map, key, field) { if (!map[key]) map[key] = { contacted: 0, replied: 0, booked: 0 }; map[key][field]++; }
+  (state.contacts || []).forEach(c => {
+    const o = ensureOutreach(c);
+    if (o.status === 'not_contacted') return;
+    const pk = ovPersonaKey(c);
+    const ch = o.channel || ovDefaultChannel(c);
+    bump(rows.persona, pk, 'contacted'); bump(rows.channel, ch, 'contacted');
+    if (o.status === 'replied' || o.status === 'booked') { bump(rows.persona, pk, 'replied'); bump(rows.channel, ch, 'replied'); }
+    if (o.status === 'booked') { bump(rows.persona, pk, 'booked'); bump(rows.channel, ch, 'booked'); }
+  });
+  return rows;
+}
+function ovOpenReactionerFor(id) {
+  const c = (state.contacts || []).find(x => x.id === id);
+  if (c) launchReactionInterview(c);
+}
+
+/* ---- mutations ---- */
+function ovMarkContacted(id, channel) {
+  const c = (state.contacts || []).find(x => x.id === id); if (!c) return;
+  const o = ensureOutreach(c);
+  o.status = 'contacted';
+  o.channel = channel || o.channel || ovDefaultChannel(c);
+  o.dateContacted = new Date().toISOString().slice(0, 10);
+  if (c.stage === 'not-contacted') c.stage = 'contacted';
+  c.updatedAt = new Date().toISOString();
+  save();
+  renderOutreach();
+  if (state.activeView === 'pipeline') renderPipeline();
+  showToast('Marked contacted — moved into follow-up tracking');
+}
+function ovApplyStatus(id, to) {
+  const c = (state.contacts || []).find(x => x.id === id); if (!c) return;
+  const o = ensureOutreach(c);
+  if (to === 'replied') { o.status = 'replied'; }
+  else if (to === 'booked') {
+    o.status = 'booked';
+    if (c.stage === 'not-contacted' || c.stage === 'contacted') c.stage = 'scheduled';
+  }
+  else if (to === 'no_response') { o.status = 'no_response'; }
+  else if (to === 'requeue') { o.status = 'not_contacted'; o.dateContacted = ''; o.followups = []; }
+  else if (to === 'contacted') { return ovMarkContacted(id, o.channel || ovDefaultChannel(c)); }
+  c.updatedAt = new Date().toISOString();
+  save();
+  renderOutreach();
+  if (state.activeView === 'pipeline') renderPipeline();
+  showToast('Outreach updated');
+}
+function ovLogFollowup(id) {
+  const c = (state.contacts || []).find(x => x.id === id); if (!c) return;
+  const o = ensureOutreach(c);
+  o.followups = o.followups || [];
+  o.followups.push({ date: new Date().toISOString().slice(0, 10), channel: o.channel || ovDefaultChannel(c) });
+  c.updatedAt = new Date().toISOString();
+  save();
+  renderOutreach();
+  showToast('Follow-up logged — reminder timer reset');
+}
+function ovSetPersona(id, persona) {
+  const c = (state.contacts || []).find(x => x.id === id); if (!c) return;
+  const o = ensureOutreach(c);
+  o.persona = (persona === 'culinary' || persona === 'realestate') ? persona : '';
+  c.updatedAt = new Date().toISOString();
+  save();
+  renderOutreach();
+}
+function ovSetChannel(id, channel) {
+  const c = (state.contacts || []).find(x => x.id === id); if (!c) return;
+  const o = ensureOutreach(c);
+  o.channel = (channel === 'ig' || channel === 'text') ? channel : '';
+  c.updatedAt = new Date().toISOString();
+  save();
+  renderOutreach();
+}
+
+/* ---- copy-to-clipboard (frictionless) ---- */
+function ovCopyValue(text, btn) {
+  const done = () => {
+    if (btn) { const orig = btn.dataset.label || btn.textContent; btn.dataset.label = orig; btn.textContent = '✓ Copied!'; setTimeout(() => { btn.textContent = orig; }, 1500); }
+    showToast('Message copied — paste it into your phone or Instagram');
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(done, () => ovCopyFallback(text, done));
+  } else { ovCopyFallback(text, done); }
+}
+function ovCopyFallback(text, done) {
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    document.execCommand('copy'); ta.remove();
+    if (done) done();
+  } catch (e) { showToast('Copy failed — select the text and copy manually'); }
+}
+
+/* ============================================================
+   OUTREACH VIEW RENDERING
+   ============================================================ */
+let ovSection = 'queue';
+let ovBriefDismissed = '';
+const OV_SECTIONS = [
+  { id: 'queue',     label: '🎯 To contact' },
+  { id: 'followups', label: '🔁 Follow-ups' },
+  { id: 'tracking',  label: '📊 Tracking' },
+  { id: 'analytics', label: '📈 Analytics' },
+  { id: 'setup',     label: '⚙️ Setup' }
+];
+
+function ovGreetTime() { const h = new Date().getHours(); return h < 12 ? 'morning' : h < 18 ? 'afternoon' : 'evening'; }
+function ovDailyBriefHtml() {
+  const today = new Date().toISOString().slice(0, 10);
+  if (ovBriefDismissed === today) return '';
+  const ct = ovCounts();
+  if (ct.not_contacted === 0 && ct.followup_due === 0) return '';
+  const bits = [];
+  if (ct.not_contacted) bits.push(`<strong>${ct.not_contacted}</strong> to contact`);
+  if (ct.followup_due) bits.push(`<strong>${ct.followup_due}</strong> follow-up${ct.followup_due === 1 ? '' : 's'} due`);
+  return `<div class="ov-brief"><span>👋 Good ${ovGreetTime()} — ${bits.join(' · ')} today.</span><button class="btn tiny ghost" data-ov-brief-dismiss="1">Dismiss</button></div>`;
+}
+
+function ovContactLinks(c) {
+  return [igChip(c), phoneChip(c), emailChip(c)].filter(Boolean).join('');
+}
+function ovPersonaSelect(c) {
+  const cur = ovPersonaKey(c);
+  const inferred = inferPersona(c);
+  const opts = [['culinary', 'Culinary (food)'], ['realestate', 'Real estate']]
+    .map(([v, l]) => `<option value="${v}" ${cur === v ? 'selected' : ''}>${l}${inferred === v ? ' • auto' : ''}</option>`).join('');
+  return `<select data-ov-persona="${c.id}" title="Which outreach persona to use">${opts}</select>`;
+}
+function ovChannelSelect(c) {
+  const cur = ovDefaultChannel(c);
+  const opts = [['text', '📱 Text'], ['ig', '📷 Instagram DM']]
+    .map(([v, l]) => `<option value="${v}" ${cur === v ? 'selected' : ''}>${l}</option>`).join('');
+  return `<select data-ov-channel="${c.id}" title="Which channel you'll send on">${opts}</select>`;
+}
+
+function ovQueueCardHtml(c, isToday) {
+  const msg = ovInitialMsg(c);
+  const ch = ovDefaultChannel(c);
+  const hasAi = state.aiSettings && state.aiSettings.apiKey;
+  const o = ensureOutreach(c);
+  const isPersonalized = o.aiDrafts && o.aiPersona === ovPersonaKey(c);
+  return `<div class="ov-card" data-ov-row="${c.id}">
+    <div class="ov-card-head">
+      <div class="who">
+        <div class="nm">${escapeHtml(c.name || '(Unnamed)')}${isToday ? ' <span class="ov-tag" style="background:var(--accent)">TODAY</span>' : ''}${isPersonalized ? ' <span class="ov-tag" style="background:#8b5cf6">✨ AI</span>' : ''}</div>
+        ${(c.company || c.role) ? `<div class="co">${escapeHtml([c.company, c.role].filter(Boolean).join(' · '))}</div>` : ''}
+        <div class="ov-links" style="margin-top:6px">${ovContactLinks(c) || '<span style="color:var(--muted);font-size:12px">No phone/IG/email yet — open to add one</span>'}</div>
+      </div>
+      <div class="ov-controls" style="margin:0">
+        <span class="seg">Persona ${ovPersonaSelect(c)}</span>
+        <span class="seg">Send via ${ovChannelSelect(c)}</span>
+      </div>
+    </div>
+    <label class="field-label">${ovChannelLabel(ch)} draft — edit if you like, then copy</label>
+    <textarea class="ov-msg" id="ov-msg-${c.id}">${escapeHtml(msg)}</textarea>
+    <div class="ov-msg-actions">
+      <button class="btn primary" data-ov-copy="ov-msg-${c.id}">📋 Copy message</button>
+      <button class="btn" data-ov-contact="${c.id}">✓ Mark contacted</button>
+      ${hasAi ? `<button class="btn ai" data-ov-ai="${c.id}">✨ Personalize</button>` : ''}
+      <button class="btn ghost" data-ov-open="${c.id}">Open contact ↗</button>
+    </div>
+  </div>`;
+}
+
+function ovFollowupCardHtml(c) {
+  const o = ensureOutreach(c);
+  const msg = ovFollowupMsg(c);
+  const ch = ovDefaultChannel(c);
+  const days = ovDaysSince(ovLastTouch(c));
+  const fc = (o.followups || []).length;
+  return `<div class="ov-card due" data-ov-row="${c.id}">
+    <div class="ov-card-head">
+      <div class="who">
+        <div class="nm">${escapeHtml(c.name || '(Unnamed)')}</div>
+        ${(c.company || c.role) ? `<div class="co">${escapeHtml([c.company, c.role].filter(Boolean).join(' · '))}</div>` : ''}
+        <div class="ov-meta-line" style="margin-top:6px">
+          <span>📤 Contacted ${escapeHtml(o.dateContacted || '?')} via ${ovChannelLabel(o.channel || ch)}</span>
+          <span>· ${days === Infinity ? '?' : days} day${days === 1 ? '' : 's'} ago</span>
+          ${fc ? `<span>· ${fc} follow-up${fc === 1 ? '' : 's'} sent</span>` : ''}
+        </div>
+        <div class="ov-links" style="margin-top:6px">${ovContactLinks(c)}</div>
+      </div>
+      <div class="ov-controls" style="margin:0"><span class="seg">Send via ${ovChannelSelect(c)}</span></div>
+    </div>
+    <label class="field-label">${ovChannelLabel(ch)} follow-up draft</label>
+    <textarea class="ov-msg" id="ov-msg-${c.id}">${escapeHtml(msg)}</textarea>
+    <div class="ov-msg-actions">
+      <button class="btn primary" data-ov-copy="ov-msg-${c.id}">📋 Copy follow-up</button>
+      <button class="btn" data-ov-followup-log="${c.id}">🔁 Logged a follow-up</button>
+      <button class="btn" data-ov-status="${c.id}" data-ov-to="replied">💬 They replied</button>
+      <button class="btn" data-ov-status="${c.id}" data-ov-to="booked">✅ Interview booked</button>
+      <button class="btn ghost" data-ov-status="${c.id}" data-ov-to="no_response">🚫 No response</button>
+    </div>
+  </div>`;
+}
+
+function ovTrackingRowHtml(c) {
+  const o = ensureOutreach(c);
+  const meta = ovStatusMeta(o.status);
+  const last = ovLastTouch(c);
+  let actions = '';
+  if (o.status === 'replied') {
+    actions = `<button class="btn tiny primary" data-ov-status="${c.id}" data-ov-to="booked">✅ Booked</button>
+      <button class="btn tiny ghost" data-ov-status="${c.id}" data-ov-to="no_response">🚫 No resp.</button>`;
+  } else if (o.status === 'booked') {
+    actions = `<button class="btn tiny primary" data-ov-reactioner="${c.id}">🎤 Reactioner</button>
+      <button class="btn tiny ghost" data-ov-status="${c.id}" data-ov-to="replied">↩ Back to replied</button>`;
+  } else if (o.status === 'no_response') {
+    actions = `<button class="btn tiny" data-ov-status="${c.id}" data-ov-to="requeue">↩ Re-queue</button>`;
+  } else if (o.status === 'contacted') {
+    actions = `<button class="btn tiny" data-ov-status="${c.id}" data-ov-to="replied">💬 Replied</button>
+      <button class="btn tiny primary" data-ov-status="${c.id}" data-ov-to="booked">✅ Booked</button>`;
+  }
+  return `<tr data-ov-open-row="${c.id}" style="cursor:pointer">
+    <td><strong>${escapeHtml(c.name || '(Unnamed)')}</strong></td>
+    <td>${escapeHtml(c.company || '')}</td>
+    <td><span class="ov-pill" style="background:${meta.color}">${meta.icon} ${escapeHtml(meta.label)}</span></td>
+    <td>${escapeHtml(ovChannelLabel(o.channel || ovDefaultChannel(c)))}</td>
+    <td>${escapeHtml(o.dateContacted || '—')}</td>
+    <td>${escapeHtml(last || '—')}</td>
+    <td onclick="event.stopPropagation()">${actions}</td>
+  </tr>`;
+}
+
+function ovDashHtml() {
+  const ct = ovCounts();
+  const cells = [
+    ['not_contacted', ct.not_contacted, 'queue'],
+    ['contacted', ct.contacted, 'followups'],
+    ['followup_due', ct.followup_due, 'followups', '🔁', 'Follow-up due', '#f5a524'],
+    ['replied', ct.replied, 'tracking'],
+    ['booked', ct.booked, 'tracking'],
+    ['no_response', ct.no_response, 'tracking']
+  ];
+  return `<div class="ov-dash">` + cells.map(cell => {
+    const statusId = cell[0], n = cell[1], jump = cell[2];
+    const meta = statusId === 'followup_due' ? { icon: cell[3], label: cell[4], color: cell[5] } : ovStatusMeta(statusId);
+    return `<div class="ov-stat ${ovSection === jump ? 'active' : ''}" data-ov-jump="${jump}">
+      <div class="n">${n}</div>
+      <div class="l"><span class="dot" style="background:${meta.color}"></span>${meta.icon} ${escapeHtml(meta.label)}</div>
+    </div>`;
+  }).join('') + `</div>`;
+}
+
+function ovSubtabsHtml() {
+  return `<div class="ov-subtabs">` + OV_SECTIONS.map(s =>
+    `<button class="ov-subtab ${ovSection === s.id ? 'active' : ''}" data-ov-sub="${s.id}">${s.label}</button>`
+  ).join('') + `</div>`;
+}
+
+function ovQueueSectionHtml() {
+  const q = ovQueue();
+  const target = (ovSettings().dailyTarget) || 10;
+  const hasAi = state.aiSettings && state.aiSettings.apiKey;
+  if (q.length === 0) {
+    return `<div class="ov-card ov-empty"><div class="big-icon">🎉</div><h3>Nobody waiting to be contacted</h3>
+      <p>Everyone in your CRM has been reached out to. Add more contacts with <strong>Quick add</strong> or <strong>✨ Import list</strong>, or check the Follow-ups tab.</p></div>`;
+  }
+  const cap = ovSendCap();
+  const sentToday = ovContactedTodayCount();
+  let capBanner = '';
+  if (cap > 0) {
+    if (sentToday >= cap) capBanner = `<div class="ov-cap warn">🛑 You've hit today's send cap (${sentToday}/${cap}). Fresh outreach tends to land better spread across days — worth pausing. You can raise the cap in Setup.</div>`;
+    else capBanner = `<div class="ov-cap">📨 ${sentToday}/${cap} sent today · ${cap - sentToday} left in today's cap</div>`;
+  }
+  const hint = `<div class="ov-hint">⏰ Best time to send: texts tend to land well late morning (10–11am) and early evening (6–8pm); Instagram DMs do best in the evenings and on weekends.</div>`;
+  const head = `<div class="ov-section-head">
+    <h3>${q.length} ${q.length === 1 ? 'person' : 'people'} to reach out to</h3>
+    <span style="color:var(--muted);font-size:13px">Aim for ${Math.min(target, q.length)} today · phone/IG sorted first, grouped by study</span>
+    <span class="sp"></span>
+    <button class="btn" data-ov-daysheet-copy="1" title="Copy today's messages as one sheet">📋 Copy day-sheet</button>
+    <button class="btn" data-ov-daysheet-dl="1" title="Download today's messages as a text file">⬇ Day-sheet</button>
+    ${hasAi ? `<button class="btn ai" data-ov-ai-all="1">✨ Personalize today's ${Math.min(target, q.length)}</button>` : ''}
+  </div>`;
+  let body = ''; let lastPersona = null;
+  q.forEach((c, i) => {
+    const pk = ovPersonaKey(c);
+    if (pk !== lastPersona) {
+      lastPersona = pk;
+      body += `<div class="ov-group">${pk === 'realestate' ? '🏠' : '🍴'} ${escapeHtml(ovPersonaCfg(pk).label)} persona</div>`;
+    }
+    body += ovQueueCardHtml(c, i < target);
+  });
+  return capBanner + hint + head + `<div class="ov-grid">${body}</div>`;
+}
+
+function ovFollowupsSectionHtml() {
+  const contacted = ovByStatus('contacted');
+  const due = contacted.filter(ovFollowupDue);
+  const waiting = contacted.filter(c => !ovFollowupDue(c));
+  const n = (ovSettings().followupDays) || 4;
+  if (contacted.length === 0) {
+    return `<div class="ov-card ov-empty"><div class="big-icon">📭</div><h3>No one awaiting a reply</h3>
+      <p>Contacts you mark as reached out to show up here. Follow-up drafts appear automatically after ${n} days of silence.</p></div>`;
+  }
+  let html = '';
+  html += `<div class="ov-section-head"><h3>🔁 Follow-up due (${due.length})</h3>
+    <span style="color:var(--muted);font-size:13px">No reply after ${n}+ days — here's a ready-to-paste nudge</span></div>`;
+  if (due.length === 0) {
+    html += `<div class="ov-card" style="color:var(--muted)">Nothing due right now. 👍</div>`;
+  } else {
+    html += `<div class="ov-grid">` + due.map(ovFollowupCardHtml).join('') + `</div>`;
+  }
+  if (waiting.length) {
+    html += `<div class="ov-section-head" style="margin-top:16px"><h3>⏳ Awaiting reply — not due yet (${waiting.length})</h3></div>`;
+    html += `<div class="list-table-wrap"><table class="list"><thead><tr><th>Name</th><th>Company</th><th>Channel</th><th>Contacted</th><th>Last touch</th><th></th></tr></thead><tbody>`;
+    html += waiting.map(ovTrackingRowHtml).join('');
+    html += `</tbody></table></div>`;
+  }
+  return html;
+}
+
+function ovTrackingSectionHtml() {
+  const groups = [
+    ['replied', '💬 Replied'],
+    ['booked', '✅ Interviews booked'],
+    ['contacted', '📤 Contacted (awaiting reply)'],
+    ['no_response', '🚫 No response']
+  ];
+  let html = '';
+  let any = false;
+  groups.forEach(pair => {
+    const status = pair[0], label = pair[1];
+    const list = ovByStatus(status);
+    if (!list.length) return;
+    any = true;
+    html += `<div class="ov-section-head" style="margin-top:8px"><h3>${label} (${list.length})</h3></div>`;
+    html += `<div class="list-table-wrap" style="margin-bottom:6px"><table class="list"><thead><tr><th>Name</th><th>Company</th><th>Status</th><th>Channel</th><th>Contacted</th><th>Last touch</th><th></th></tr></thead><tbody>`;
+    html += list.map(ovTrackingRowHtml).join('');
+    html += `</tbody></table></div>`;
+  });
+  if (!any) {
+    html = `<div class="ov-card ov-empty"><div class="big-icon">📊</div><h3>Nothing tracked yet</h3>
+      <p>Once you start marking people contacted, replied, or booked, they'll be tracked here by stage.</p></div>`;
+  }
+  return html;
+}
+
+function ovAnalyticsSectionHtml() {
+  const a = ovAnalytics();
+  const totalContacted = (state.contacts || []).filter(c => ensureOutreach(c).status !== 'not_contacted').length;
+  if (totalContacted === 0) {
+    return `<div class="ov-card ov-empty"><div class="big-icon">📈</div><h3>No outreach data yet</h3>
+      <p>Once you've contacted a few people and logged replies and bookings, you'll see which persona and channel book the most interviews.</p></div>`;
+  }
+  function tbl(map, head) {
+    const keys = Object.keys(map);
+    if (!keys.length) return '';
+    const rows = keys.map(k => {
+      const r = map[k];
+      const rr = r.contacted ? Math.round(r.replied / r.contacted * 100) : 0;
+      const br = r.contacted ? Math.round(r.booked / r.contacted * 100) : 0;
+      const label = (head === 'Persona')
+        ? (k === 'realestate' ? '🏠 Real estate' : '🍴 Culinary')
+        : (k === 'ig' ? '📷 Instagram DM' : '📱 Text');
+      return `<tr><td><strong>${label}</strong></td><td>${r.contacted}</td><td>${r.replied}</td><td>${r.booked}</td><td>${rr}%</td><td>${br}%</td></tr>`;
+    }).join('');
+    return `<div class="ov-section-head" style="margin-top:8px"><h3>By ${head.toLowerCase()}</h3></div>
+      <div class="list-table-wrap" style="margin-bottom:6px"><table class="list"><thead><tr><th>${head}</th><th>Contacted</th><th>Replied</th><th>Booked</th><th>Reply rate</th><th>Book rate</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  }
+  function bestOf(map) {
+    let best = null;
+    Object.keys(map).forEach(k => {
+      const r = map[k]; if (r.contacted < 3) return;
+      const br = r.booked / r.contacted;
+      if (!best || br > best.br) best = { k, br };
+    });
+    return best;
+  }
+  const bp = bestOf(a.persona), bc = bestOf(a.channel);
+  const bits = [];
+  if (bp) bits.push(`${bp.k === 'realestate' ? 'real-estate' : 'culinary'} outreach books at ${Math.round(bp.br * 100)}%`);
+  if (bc) bits.push(`${bc.k === 'ig' ? 'Instagram DMs' : 'texts'} book at ${Math.round(bc.br * 100)}%`);
+  const callout = bits.length ? `<div class="ov-hint">📊 So far, ${bits.join(' and ')}. (Groups with fewer than 3 contacted are excluded as too small to read into.)</div>` : '';
+  return callout + tbl(a.persona, 'Persona') + tbl(a.channel, 'Channel');
+}
+
+function ovSetupSectionHtml() {
+  const s = ovSettings();
+  const hasAi = state.aiSettings && state.aiSettings.apiKey;
+  return `<div class="ov-card ov-setup">
+    <h3 style="margin-top:0">⚙️ Outreach setup</h3>
+    <div class="form-row">
+      <div class="form-field"><label class="field-label">Your name (used in every message)</label>
+        <input type="text" id="ov-owner" value="${escapeHtml(s.ownerName || '')}" placeholder="Oli" /></div>
+      <div class="form-field"><label class="field-label">Follow up after (days of silence)</label>
+        <input type="number" id="ov-followup-days" min="1" max="60" value="${escapeHtml(String(s.followupDays || 4))}" /></div>
+    </div>
+    <div class="form-row">
+      <div class="form-field"><label class="field-label">Daily reach-out target</label>
+        <input type="number" id="ov-daily-target" min="1" max="100" value="${escapeHtml(String(s.dailyTarget || 10))}" /></div>
+      <div class="form-field"><label class="field-label">Per-day send cap (0 = no cap)</label>
+        <input type="number" id="ov-send-cap" min="0" max="200" value="${escapeHtml(String(ovSendCap()))}" /></div>
+    </div>
+    <div class="form-row">
+      <div class="form-field"><label class="field-label">AI personalization</label>
+        <input type="text" disabled value="${hasAi ? '✓ API key set — Personalize enabled' : 'No API key — using built-in templates'}" style="background:var(--soft);color:var(--muted)" /></div>
+      <div class="form-field"></div>
+    </div>
+    <h4 style="margin:14px 0 8px">Persona intro lines</h4>
+    <p style="color:var(--muted);font-size:12.5px;margin:0 0 10px">Each message starts "Hi [name], my name is [you] — I'm ___." Edit the blank below per persona.</p>
+    <div class="form-row">
+      <div class="form-field"><label class="field-label">🍴 Culinary persona — "I'm…"</label>
+        <input type="text" id="ov-persona-culinary" value="${escapeHtml(s.personas.culinary.study || '')}" /></div>
+      <div class="form-field"><label class="field-label">🏠 Real-estate persona — "I'm…"</label>
+        <input type="text" id="ov-persona-realestate" value="${escapeHtml(s.personas.realestate.study || '')}" /></div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:4px">
+      <button class="btn primary" id="ov-save-setup">Save outreach settings</button>
+      <span style="font-size:12.5px;color:var(--muted)">Saving regenerates the built-in drafts. AI-personalized drafts are kept until you re-personalize.</span>
+    </div>
+  </div>`;
+}
+
+function renderOutreach() {
+  const wrap = document.getElementById('view-outreach');
+  if (!wrap) return;
+  let body = '';
+  if (ovSection === 'queue') body = ovQueueSectionHtml();
+  else if (ovSection === 'followups') body = ovFollowupsSectionHtml();
+  else if (ovSection === 'tracking') body = ovTrackingSectionHtml();
+  else if (ovSection === 'analytics') body = ovAnalyticsSectionHtml();
+  else if (ovSection === 'setup') body = ovSetupSectionHtml();
+  wrap.innerHTML = `<div class="ov-wrap">${ovDailyBriefHtml()}${ovDashHtml()}${ovSubtabsHtml()}<div id="ov-body">${body}</div></div>`;
+  ovWire();
+}
+
+function ovWire() {
+  const wrap = document.getElementById('view-outreach');
+  if (!wrap) return;
+  wrap.querySelectorAll('[data-ov-jump]').forEach(el => el.addEventListener('click', () => { ovSection = el.dataset.ovJump; renderOutreach(); }));
+  wrap.querySelectorAll('[data-ov-sub]').forEach(el => el.addEventListener('click', () => { ovSection = el.dataset.ovSub; renderOutreach(); }));
+  wrap.querySelectorAll('[data-ov-copy]').forEach(btn => btn.addEventListener('click', () => {
+    const ta = document.getElementById(btn.dataset.ovCopy);
+    if (ta) ovCopyValue(ta.value, btn);
+  }));
+  wrap.querySelectorAll('[data-ov-contact]').forEach(btn => btn.addEventListener('click', () => ovMarkContacted(btn.dataset.ovContact)));
+  wrap.querySelectorAll('[data-ov-persona]').forEach(sel => sel.addEventListener('change', () => ovSetPersona(sel.dataset.ovPersona, sel.value)));
+  wrap.querySelectorAll('[data-ov-channel]').forEach(sel => sel.addEventListener('change', () => ovSetChannel(sel.dataset.ovChannel, sel.value)));
+  wrap.querySelectorAll('[data-ov-status]').forEach(btn => btn.addEventListener('click', () => ovApplyStatus(btn.dataset.ovStatus, btn.dataset.ovTo)));
+  wrap.querySelectorAll('[data-ov-followup-log]').forEach(btn => btn.addEventListener('click', () => ovLogFollowup(btn.dataset.ovFollowupLog)));
+  wrap.querySelectorAll('[data-ov-open]').forEach(btn => btn.addEventListener('click', () => openContactDetail(btn.dataset.ovOpen)));
+  wrap.querySelectorAll('[data-ov-open-row]').forEach(tr => tr.addEventListener('click', () => openContactDetail(tr.dataset.ovOpenRow)));
+  wrap.querySelectorAll('[data-ov-reactioner]').forEach(btn => btn.addEventListener('click', e => { e.stopPropagation(); ovOpenReactionerFor(btn.dataset.ovReactioner); }));
+
+  const dsCopy = wrap.querySelector('[data-ov-daysheet-copy]');
+  if (dsCopy) dsCopy.addEventListener('click', () => ovCopyValue(ovDaysheetText(), dsCopy));
+  const dsDl = wrap.querySelector('[data-ov-daysheet-dl]');
+  if (dsDl) dsDl.addEventListener('click', ovDownloadDaysheet);
+  const brief = wrap.querySelector('[data-ov-brief-dismiss]');
+  if (brief) brief.addEventListener('click', () => { ovBriefDismissed = new Date().toISOString().slice(0, 10); renderOutreach(); });
+
+  wrap.querySelectorAll('[data-ov-ai]').forEach(btn => btn.addEventListener('click', async () => {
+    const c = (state.contacts || []).find(x => x.id === btn.dataset.ovAi);
+    if (!c) return;
+    if (!(state.aiSettings && state.aiSettings.apiKey)) { showToast('Add an Anthropic API key in Setup first'); return; }
+    const orig = btn.innerHTML; btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Personalizing…';
+    try { await ovGenerateAI(c); renderOutreach(); showToast('Personalized with Claude'); }
+    catch (err) { alert('Personalization failed: ' + err.message); btn.disabled = false; btn.innerHTML = orig; }
+  }));
+
+  const allBtn = wrap.querySelector('[data-ov-ai-all]');
+  if (allBtn) allBtn.addEventListener('click', async () => {
+    if (!(state.aiSettings && state.aiSettings.apiKey)) { showToast('Add an Anthropic API key in Setup first'); return; }
+    const target = (ovSettings().dailyTarget) || 10;
+    const batch = ovQueue().slice(0, target);
+    if (!batch.length) { showToast('Queue is empty'); return; }
+    allBtn.disabled = true;
+    let done = 0, failed = 0;
+    for (const c of batch) {
+      allBtn.innerHTML = `<span class="spinner"></span> Personalizing ${done + 1}/${batch.length}…`;
+      try { await ovGenerateAI(c); } catch (e) { failed++; }
+      done++;
+    }
+    renderOutreach();
+    showToast(`Personalized ${done - failed}/${batch.length}${failed ? ' (' + failed + ' failed)' : ''}`);
+  });
+
+  const saveBtn = wrap.querySelector('#ov-save-setup');
+  if (saveBtn) saveBtn.addEventListener('click', () => {
+    const s = ovSettings();
+    const owner = (document.getElementById('ov-owner').value || '').trim();
+    s.ownerName = owner || 'Oli';
+    const fd = parseInt(document.getElementById('ov-followup-days').value, 10);
+    s.followupDays = (fd >= 1 && fd <= 60) ? fd : 4;
+    const dt = parseInt(document.getElementById('ov-daily-target').value, 10);
+    s.dailyTarget = (dt >= 1 && dt <= 100) ? dt : 10;
+    const sc = parseInt(document.getElementById('ov-send-cap').value, 10);
+    s.sendCap = (sc >= 0 && sc <= 200) ? sc : 25;
+    const cu = (document.getElementById('ov-persona-culinary').value || '').trim();
+    const re = (document.getElementById('ov-persona-realestate').value || '').trim();
+    if (cu) s.personas.culinary.study = cu;
+    if (re) s.personas.realestate.study = re;
+    save();
+    ovSection = 'queue';
+    renderOutreach();
+    showToast('Outreach settings saved');
+  });
+}
+
+/* Small status badge shown on kanban cards */
+function ovKanbanTag(c) {
+  const o = c.outreach;
+  if (!o || o.status === 'not_contacted') return '';
+  if (ovFollowupDue(c)) return `<span class="tag interviews">🔁 Follow-up due</span>`;
+  const meta = ovStatusMeta(o.status);
+  return `<span class="tag" title="Outreach status">${meta.icon} ${escapeHtml(meta.label)}</span>`;
 }
 
 /* ============================================================
