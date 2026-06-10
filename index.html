@@ -640,6 +640,7 @@ function migrate(s) {
   if (!s.aiSettings) s.aiSettings = { apiKey: '', model: 'claude-haiku-4-5-20251001' };
   if (!s.integration) s.integration = defaultIntegration();
   if (!s.outreachSettings) s.outreachSettings = defaultOutreachSettings();
+  if (s.outreachSettings.ownerName === 'Oli') s.outreachSettings.ownerName = 'Sid';
   s.contacts.forEach(function (c) { if (!c.outreach || typeof c.outreach !== 'object') c.outreach = defaultOutreach(); });
   s.filters = Object.assign(defaultFilters(), s.filters || {});
   return s;
@@ -2216,7 +2217,7 @@ function ovStatusMeta(id) { return OUTREACH_STATUSES.find(s => s.id === id) || O
 
 function defaultOutreachSettings() {
   return {
-    ownerName: 'Oli',
+    ownerName: 'Sid',
     followupDays: 4,
     dailyTarget: 10,
     sendCap: 25,
@@ -2281,7 +2282,7 @@ function ovFirstName(c) {
 /* ---- static (offline) draft templates ---- */
 function ovBuildStatic(c) {
   const s = ovSettings();
-  const owner = (s.ownerName || 'Oli').trim() || 'Oli';
+  const owner = (s.ownerName || 'Sid').trim() || 'Sid';
   const key = ovPersonaKey(c);
   const p = ovPersonaCfg(key);
   const first = ovFirstName(c);
@@ -2291,15 +2292,15 @@ function ovBuildStatic(c) {
     const coClause = company ? ` over at ${company}` : '';
     const coIG = company ? ` at ${company}` : '';
     textDraft = `Hi ${first}, my name is ${owner} — I'm ${p.study}. I came across your work${coClause} and I'm doing a short study where I'm learning directly from realtors about how the business actually works day to day. Would you be open to a quick 15-minute chat sometime in the next week or two? No sales pitch at all — I'm genuinely just trying to learn from people in the field. Thanks so much!`;
-    igDraft = `Hi ${first}! I'm ${owner}, ${p.study}. I'm doing a short study learning from realtors${coIG} about how the business really works — would you be open to a quick 15-min chat? No pitch, promise, just learning 🙏`;
+    igDraft = `Hi ${first}! I'm ${owner}, ${p.study}. I'm doing a short study learning from realtors${coIG} about how the business really works — would you be open to a quick 15-min chat? No pitch, promise, just trying to learn.`;
   } else {
     const coClause = company ? ` and was really impressed by what you're doing at ${company}` : '';
     const coIG = company ? ` at ${company}` : '';
     textDraft = `Hi ${first}, my name is ${owner} — I'm ${p.study}. I came across your business${coClause}. I'm doing a short study where I'm learning directly from people who run food businesses, and I'd love to hear about your experience. Would you be open to a quick 15-minute chat sometime in the next week or two? No sales pitch — I'm genuinely just trying to learn. Thanks so much!`;
-    igDraft = `Hi ${first}! I'm ${owner}, ${p.study} 🙌 Love what you're doing${coIG}. I'm doing a short study learning from people who actually run food businesses — would you be up for a quick 15-min chat? No pitch, just learning 🙏`;
+    igDraft = `Hi ${first}! I'm ${owner}, ${p.study}. Love what you're doing${coIG}. I'm doing a short study learning from people who actually run food businesses — would you be up for a quick 15-min chat? No pitch, just trying to learn.`;
   }
   const followupText = `Hi ${first}, just wanted to gently bump this up in case it got buried! Still would really love a quick 15 minutes to learn from your experience whenever works for you. Totally understand if you're slammed — even 10 minutes would mean a lot. Thanks again, ${owner}`;
-  const followupIg = `Hey ${first}! Just bumping this in case it got lost 🙂 Still would love a quick chat whenever suits you — no worries at all if you're busy!`;
+  const followupIg = `Hey ${first}! Just bumping this in case it got lost. Still would love a quick chat whenever suits you — no worries at all if you're busy!`;
   return { textDraft, igDraft, followupText, followupIg };
 }
 function ovDrafts(c) {
@@ -2322,7 +2323,7 @@ function ovChannelLabel(ch) { return ch === 'ig' ? 'Instagram DM' : 'Text messag
 /* ---- AI personalization (optional, via callClaude) ---- */
 function ovAIPrompt(c, key) {
   const s = ovSettings();
-  const owner = (s.ownerName || 'Oli').trim() || 'Oli';
+  const owner = (s.ownerName || 'Sid').trim() || 'Sid';
   const p = ovPersonaCfg(key);
   const ctx = JSON.stringify({
     firstName: ovFirstName(c), name: c.name || '', company: c.company || '', role: c.role || '',
@@ -2332,9 +2333,9 @@ function ovAIPrompt(c, key) {
 
 Write FOUR messages for the contact below:
 1. "textDraft": an SMS/text message, 2-4 sentences. Warm, specific, references their name and business naturally, clear small ask for a 15-minute chat. No links, no subject line.
-2. "igDraft": an Instagram DM — shorter and more casual than the text (1-3 sentences), at most one tasteful emoji, same ask.
+2. "igDraft": an Instagram DM — shorter and more casual than the text (1-3 sentences), NO emojis, same ask.
 3. "followupText": a short, low-pressure follow-up text for if they don't reply after a few days. No guilt-tripping.
-4. "followupIg": a very short, casual IG follow-up DM. Low pressure.
+4. "followupIg": a very short, casual IG follow-up DM. Low pressure. No emojis.
 
 Rules: Always use their first name. Personalize from company/role/notes when present, but DO NOT invent facts. Keep it human, not corporate. Sign as ${owner} only where natural. Vary the phrasing from generic templates.
 
@@ -2828,7 +2829,7 @@ function ovSetupSectionHtml() {
     <h3 style="margin-top:0">⚙️ Outreach setup</h3>
     <div class="form-row">
       <div class="form-field"><label class="field-label">Your name (used in every message)</label>
-        <input type="text" id="ov-owner" value="${escapeHtml(s.ownerName || '')}" placeholder="Oli" /></div>
+        <input type="text" id="ov-owner" value="${escapeHtml(s.ownerName || '')}" placeholder="Sid" /></div>
       <div class="form-field"><label class="field-label">Follow up after (days of silence)</label>
         <input type="number" id="ov-followup-days" min="1" max="60" value="${escapeHtml(String(s.followupDays || 4))}" /></div>
     </div>
@@ -2926,7 +2927,7 @@ function ovWire() {
   if (saveBtn) saveBtn.addEventListener('click', () => {
     const s = ovSettings();
     const owner = (document.getElementById('ov-owner').value || '').trim();
-    s.ownerName = owner || 'Oli';
+    s.ownerName = owner || 'Sid';
     const fd = parseInt(document.getElementById('ov-followup-days').value, 10);
     s.followupDays = (fd >= 1 && fd <= 60) ? fd : 4;
     const dt = parseInt(document.getElementById('ov-daily-target').value, 10);
